@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+
+.game-board {
+  font-family: monospace;
+  white-space: pre;
+  background-color: #f4f4f4;
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin: 20px;
+  width: fit-content;
+  border-radius: 0.4em;
+}

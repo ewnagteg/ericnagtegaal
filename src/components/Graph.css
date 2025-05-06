@@ -1,0 +1,55 @@
+.scene {
+
+    max-width: 90%; /* Make the scene take up 90% of the container's width */
+    max-height: 90%; /* Make the scene take up 90% of the container's height */
+    margin: auto; /* Center it horizontally */
+
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    /* Prevents overflow */
+    position: relative;
+    width: 100vw;
+    height: 50vh;
+    perspective: 500px;
+    /* Ensures proper 3D depth */
+}
+
+.graph {
+    position: relative;
+    transform-style: preserve-3d;
+    /* Ensures 3D rendering */
+    animation: rotateGraph 20s infinite linear;
+}
+
+
+.vertex {
+    position: absolute;
+    width: 5px;
+    height: 10px;
+    background: wheat;
+    border-radius: 50%;
+    transform-style: preserve-3d;
+}
+
+.edge {
+    position: absolute;
+    height: 2px;
+    background: white;
+    transform-origin: left center;
+}
+
+  
+@keyframes rotateGraph {
+    0% { transform: rotateX(0deg) rotateY(0deg); }
+    100% { transform: rotateX(0deg) rotateY(360deg); }
+}
+
+.clip-triangle {
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  }
+
+
+  

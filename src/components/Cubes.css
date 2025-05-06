@@ -1,0 +1,26 @@
+
+  .scene {
+    perspective: 1900px;
+  }
+  
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(5, 50px);
+    grid-template-rows: repeat(5, 50px);
+    gap: 10px;
+    transform-style: preserve-3d;
+    transform: rotateX(60deg) rotateY(0deg);
+  }
+  
+  .grid-item {
+    width: 50px;
+    height: 50px;
+    /* background: cyan; */
+    border: 2px solid white;
+  }
+  
+  .grid-item:hover {
+    transform: translateZ(20px);
+    background: white;
+  }
+  
