@@ -1,6 +1,6 @@
 import React from "react";
 import { HashLink } from 'react-router-hash-link';
-export default function Navbar() {
+export default function Notepadnav({ newNote, saveNotes, searchNotes}) {
   return (
     <header className="bg-gray-800 md:sticky top-0 z-10">
       <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
@@ -16,15 +16,19 @@ export default function Navbar() {
           <HashLink to="/vl" className="mr-5 hover:text-white">
             VL App
           </HashLink>
-          <HashLink to="/notepad" className="mr-5 hover:text-white">
-            Notepad
-          </HashLink>
+          <button className="mr-5 hover:text-white"
+          onClick={() => { newNote() }}>
+            New Note
+          </button>
+          <button className="mr-5 hover:text-white"
+          onClick={() => { saveNotes() }}>
+            Save Notes
+          </button>
+          <button className="mr-5 hover:text-white"
+          onClick={() => { searchNotes() }}>
+            Search
+          </button>
         </div>
-        <a
-          href="/#contact"
-          className="inline-flex items-center bg-gray-800 border-0 py-1 px-3 focus:outline-none hover:bg-gray-700 rounded text-base mt-4 md:mt-0">
-          Hire Me
-        </a>
       </div>
     </header>
   );

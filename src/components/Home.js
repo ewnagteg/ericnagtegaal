@@ -6,14 +6,10 @@ import Projects from './Projects.js';
 import Graph from "./Graph.js";
 import { Link } from "react-router-dom";
 import ReactGA from 'react-ga4';
-import LoginButton from "./Login.js";
-import Profile from "./Profile.js";
 
 export default function Home() {
     return (<main className="text-gray-400 bg-gray-900 body-font">
         <Navbar />
-        <LoginButton />
-        <Profile />
         <div className="max-w-[85%] mx-auto flex justify-center items-start">
             <div className="w-1/2 flex">
                 <About />

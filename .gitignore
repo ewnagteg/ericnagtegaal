@@ -18,6 +18,8 @@
 .env.test.local
 .env.production.local
 
+*.ps1
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -26,7 +28,6 @@ src/components/SceneComponent.js
 src/components/Project.js
 src/components/Noise.js
 src/components/Map.js
-src/components/LineChart.js
 src/components/OldProjects.js
 src/components/SimpleShader.js
 src/components/Graph3d.js
@@ -38,3 +39,4 @@ src/components/AtmosphereShader.js
 src/components/Example.js
 src/components/dist/*
 *.obj
+python/vlrggapi
