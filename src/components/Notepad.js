@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { ReactFlow, useNodesState, useReactFlow } from '@xyflow/react';
 import Notepadnav from './Notepadnav.js';
 import { fetchWithAuth, fetchWithAuthPost } from '../api/fetchWithAuth';
@@ -9,7 +9,6 @@ import Fuse from 'fuse.js';
 const initialNodes = [
 ];
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
-
 export default function Notepad() {
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
     const [selectedNode, setSelectedNode] = useState(null);
@@ -18,14 +17,52 @@ export default function Notepad() {
     const [nodes, setNodes, onNodesChanges] = useNodesState(initialNodes);
     const [searchResults, setSearchResults] = useState([]);
     const [fuse, setFuse] = useState(null);
+    const { setViewport } = useReactFlow();
+    const workerRef = useRef(null);
+    const [workerstate, setWorkerstate] = useState('loading');
 
+    useEffect(() => {
+        workerRef.current = new Worker('tfidfworker.js');;
+        const worker = workerRef.current;
+        // currently this worker doesnt load anything so fine to set it to ready
+        setWorkerstate('ready');
+        worker.onmessage = (e) => {
+           if (e.data.type === 'result') {
+                console.log('Received result:', e.data);
+                let positions = e.data.data;
+                setWorkerstate('ready');
+                setNodes((prevNodes) =>
+                    prevNodes.map((node, index) => ({
+                        ...node,
+                        position: positions[index], // Update position based on the corresponding index
+                    }))
+                );
+            } else if (e.data.type === 'error') {
+                setWorkerstate('error');
+                console.error('Error from worker:', e.data.message);
+            }
+        };
+        return () => worker.terminate();
+    }, []);
+
+    const updatePositions = useCallback(() => {
+        // This function gets called when the user clicks the update graph button
+        // it should check state of worker and send nodes to it if not busy
+        if (workerstate === 'ready') {
+            workerRef.current.postMessage({ type: 'process', data: JSON.stringify(nodes) });
+            setWorkerstate('busy');
+        }
+    });
+
+    // sets the selected node, this will display the edit node UI
     const onNodeClick = (event, node) => {
         setSelectedNode(node);
     };
 
-    const { setViewport } = useReactFlow();
+    // this sets the viewport to center on the given x and y coordinates
+    // this allows search results to center relevant node
     const onBlockOpen = useCallback((x, y) => {
-        const zoom = 1.0; // or any preferred zoom
+        const zoom = 1.0;
         const { innerWidth, innerHeight } = window;
 
         const centerX = x - innerWidth / 2 / zoom;
@@ -34,8 +71,8 @@ export default function Notepad() {
         setViewport({ x: -centerX, y: -centerY, zoom });
     }, [setViewport]);
 
+    // saves notes to the server
     const saveNotes = useCallback(() => {
-        // Logic to save notes, e.g., send to server or local storage
         console.log('Notes saved:', nodes);
         const data = {
             nodes: nodes.map(node => ({
@@ -48,6 +85,9 @@ export default function Notepad() {
         };
         fetchWithAuthPost({ getAccessTokenSilently, url: 'https://ericnagtegaal.ca/api/notes', body: data });
     });
+
+    // creates a new note, does not save to server
+    // this is just for the UI
     const newNote = useCallback(() => {
         const newNode = {
             id: `${nodes.length + 1}`,
@@ -61,6 +101,8 @@ export default function Notepad() {
         // Logic to save search, e.g., send to server or local storage
         setSearch(true);
     };
+
+    // fetches users notes from the server
     useEffect(() => {
         if (isAuthenticated) {
             (async () => {
@@ -77,6 +119,9 @@ export default function Notepad() {
         }
     }, [getAccessTokenSilently, isAuthenticated]);
 
+    // this syncs fuse with current state of nodes
+    // maybe this can be done a bit more efficiently
+    // but this works for now
     useEffect(() => {
         if (nodes.length > 0) {
             const newFuse = new Fuse(nodes, {
@@ -90,15 +135,17 @@ export default function Notepad() {
     }, [nodes]);
 
     return (<main className="text-gray-400 bg-gray-900 body-font">
-        <Notepadnav newNote={newNote} saveNotes={saveNotes} searchNotes={searchNotes} />
+        <Notepadnav newNote={newNote} saveNotes={saveNotes} searchNotes={searchNotes} updatePositions={updatePositions}/>
         <div style={{ width: '100vw', height: '100vh' }}>
+            {/* react flow component - displays actual nodes */}
             <ReactFlow nodes={nodes}
                 edges={initialEdges}
                 onNodeClick={onNodeClick}
                 onNodesChange={onNodesChanges}
                 fitView />
+            {/* search ui */}
             {(search && !selectedNode) && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex justify-center items-center z-50"><div className="bg-gray-900 p-4 rounded shadow-lg max-w-xl w-full max-h-xl">
-                <h2 className="text-xl font-bold mb-2">Edit Node:</h2>
+                <h2 className="text-xl font-bold mb-2">Search Nodes:</h2>
                 <input
                     type="text"
                     className="w-full bg-gray-800 border p-3 mb-4 text-white rounded"
@@ -164,6 +211,7 @@ export default function Notepad() {
                     </button>
                 </div>
             </div></div>}
+            {/* edit node */}
             {selectedNode && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex justify-center items-center z-50">
                 <div className="bg-gray-900 p-4 rounded shadow-lg max-w-xl w-full max-h-xl">
                     <h2 className="text-xl font-bold mb-2">Edit Node:</h2>

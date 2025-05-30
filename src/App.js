@@ -33,7 +33,7 @@ function App() {
           <Route path="/projects" element={<Project />} />
           <Route path="/articles" element={<Articles />} />
           <Route path="/login" element={<LoginRedirect />} />
-          <Route path="/llmtest" element={<Llmtest />} />
+          {/* <Route path="/llmtest" element={<Llmtest />} /> */}
           {/* <Route path="/admin" element={
             <PrivateRoute>
               <TestAdmin />
