@@ -79,13 +79,13 @@ export default function StatsPage() {
                 <div className="container mx-auto px-5">
                     <div>
                         <p>
-                            <h2 className="text-white sm:text-4xl text-3xl mb-4 font-medium title-font">About Standings Stats</h2>
+                            <h2 className="text-white sm:text-3xl mb-3 font-medium title-font">About Standings Stats</h2>
                             This pages shows the standings of players in this Fantasy League. Points are the sum of the kills that each Fantasy League player"s team"s players got in the turnament.
                             <br />
                             <br />
                         </p>
                     </div>
-                    <table className="table-auto border border-gray-300 w-full">
+                    <table className="table-auto border border-gray-300">
                         <thead>
                             <tr>
                                 <th className="border border-gray-300 px-4 py-2">User ID</th>
@@ -101,8 +101,8 @@ export default function StatsPage() {
                             ))}
                         </tbody>
                     </table>
-                    <div>
-                        <h1>Player points Over Time</h1>
+                    <div className="mt-10">
+                        <h1 className="text-white sm:text-3xl">Player points Over Time</h1>
                         {chartData ? <LineChart chartData={chartData} /> : <p>Loading...</p>}
                     </div>
                 </div>
