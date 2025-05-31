@@ -14,7 +14,7 @@ export default function StatsPage() {
         const fetchStats = async () => {
             try {
                 const token = await getAccessTokenSilently({
-                    audience: 'https://ericnagtegaal.ca/api',
+                    audience: "https://ericnagtegaal.ca/api",
                 });
                 const res = await fetch("https://ericnagtegaal.ca/api/stats", {
                     headers: {
@@ -80,7 +80,7 @@ export default function StatsPage() {
                     <div>
                         <p>
                             <h2 className="text-white sm:text-4xl text-3xl mb-4 font-medium title-font">About Standings Stats</h2>
-                            This pages shows the standings of players in this Fantasy League. Points are the sum of the kills that each Fantasy League player's team's players got in the turnament.
+                            This pages shows the standings of players in this Fantasy League. Points are the sum of the kills that each Fantasy League player"s team"s players got in the turnament.
                             <br />
                             <br />
                         </p>

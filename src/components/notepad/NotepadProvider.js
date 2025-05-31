@@ -1,5 +1,5 @@
-import { ReactFlowProvider } from '@xyflow/react';
-import Notepad from './Notepad.js';
+import { ReactFlowProvider } from "@xyflow/react";
+import Notepad from "./Notepad.js";
 
 export default function NotepadProvider({ children }) {
     return (

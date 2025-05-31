@@ -1,7 +1,7 @@
 import React from "react";
 import "./Graph.css"
 // import { Link } from "react-router-dom";
-import { HashLink } from 'react-router-hash-link';
+import { HashLink } from "react-router-hash-link";
 function getEulerAnglesFromVector(x, y, z) {
     const pitch = Math.atan2(y, Math.sqrt(x * x + z * z));  // atan2(y, sqrt(x^2 + z^2))
     const yaw = Math.atan2(-x, z);  // atan2(-x, z)
@@ -273,13 +273,13 @@ const separateLines = str.split(/\r?\n|\r|\n/g);
 for (let line of separateLines) {
     let data = line.split(/\s/g);
     // vertex
-    if (data[0] == 'v') {
+    if (data[0] == "v") {
         vertices.push({
             x: parseFloat(data[3]) * 30,
             y: parseFloat(-data[2]) * 30,
             z: parseFloat(data[1]) * 30
         });
-    } else if (data[0] === 'f') {
+    } else if (data[0] === "f") {
         const face = data.slice(1).map(v => Number(v) - 1); // Convert indices to 0-based
         if (face.length === 3) {
             // Triangle face (3 edges)
@@ -291,7 +291,7 @@ for (let line of separateLines) {
     }
 
 
-    // else if (data[0] == 'f') {
+    // else if (data[0] == "f") {
     //     const face = data.slice(-4).map(v => Number(v) - 1);
     //     edges.push([face[1], face[0]], [face[2], face[1]], [face[3], face[2], [face[0], face[3]]]);
     // }

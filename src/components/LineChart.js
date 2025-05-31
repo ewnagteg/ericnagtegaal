@@ -7,8 +7,8 @@ Chart.register(...registerables);
 export default function LineChart({ chartData }) {
     return (
         <div className="chart-container" style={{
-            width: '100%',
-            backgroundColor: 'white',
+            width: "100%",
+            backgroundColor: "white",
         }}>
             <h2 style={{ textAlign: "center" }}></h2>
             <Line

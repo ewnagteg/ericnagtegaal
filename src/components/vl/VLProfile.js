@@ -1,26 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import VLNavBar from "./VLNavBar";
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth0 } from "@auth0/auth0-react";
 
 
 export default function VLProfile() {
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState([]);
-    const [username, setUsername] = useState('');
+    const [username, setUsername] = useState("");
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
                 const token = await getAccessTokenSilently({
-                    audience: 'https://ericnagtegaal.ca/api',
+                    audience: "https://ericnagtegaal.ca/api",
                 });
-                const res = await fetch('https://ericnagtegaal.ca/api/profile', {
+                const res = await fetch("https://ericnagtegaal.ca/api/profile", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                if (!res.ok) throw new Error('Failed to fetch players');
+                if (!res.ok) throw new Error("Failed to fetch players");
                 const data = await res.json();
                 setProfile(data);
                 if (data[0]?.username) {
@@ -28,7 +28,7 @@ export default function VLProfile() {
                 }
                 setLoading(false);
             } catch (err) {
-                console.error('Failed to load players:', err);
+                console.error("Failed to load players:", err);
             }
         };
 

@@ -1,47 +1,47 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { ReactFlow, useNodesState, useReactFlow } from '@xyflow/react';
-import Notepadnav from './Notepadnav.js';
-import { fetchWithAuth, fetchWithAuthPost } from '../../api/fetchWithAuth';
-import '@xyflow/react/dist/style.css';
-import { useAuth0 } from '@auth0/auth0-react';
-import Fuse from 'fuse.js';
-import { useMessage } from "./MessageContext";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { ReactFlow, useNodesState, useReactFlow } from "@xyflow/react";
+import Notepadnav from "./Notepadnav.js";
+import { fetchWithAuth, fetchWithAuthPost } from "../../api/fetchWithAuth";
+import "@xyflow/react/dist/style.css";
+import { useAuth0 } from "@auth0/auth0-react";
+import Fuse from "fuse.js";
+import { useMessage } from "../MessageProvider.js";
 
 const initialNodes = [
 ];
-const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
+const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
 export default function Notepad() {
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
     const [selectedNode, setSelectedNode] = useState(null);
     const [search, setSearch] = useState(false);
-    const [searchValue, setSearchValue] = useState('');
+    const [searchValue, setSearchValue] = useState("");
     const [nodes, setNodes, onNodesChanges] = useNodesState(initialNodes);
     const [searchResults, setSearchResults] = useState([]);
     const [fuse, setFuse] = useState(null);
     const { setViewport } = useReactFlow();
     const workerRef = useRef(null);
-    const [workerstate, setWorkerstate] = useState('loading');
+    const [workerstate, setWorkerstate] = useState("loading");
     const { setMessage } = useMessage();
 
     useEffect(() => {
-        workerRef.current = new Worker('tfidfworker.js');;
+        workerRef.current = new Worker("tfidfworker.js");;
         const worker = workerRef.current;
         // currently this worker doesnt load anything so fine to set it to ready
-        setWorkerstate('ready');
+        setWorkerstate("ready");
         worker.onmessage = (e) => {
-            if (e.data.type === 'result') {
-                console.log('Received result:', e.data);
+            if (e.data.type === "result") {
+                console.log("Received result:", e.data);
                 let positions = e.data.data;
-                setWorkerstate('ready');
+                setWorkerstate("ready");
                 setNodes((prevNodes) =>
                     prevNodes.map((node, index) => ({
                         ...node,
                         position: positions[index], // Update position based on the corresponding index
                     }))
                 );
-            } else if (e.data.type === 'error') {
-                setWorkerstate('error');
-                console.error('Error from worker:', e.data.message);
+            } else if (e.data.type === "error") {
+                setWorkerstate("error");
+                console.error("Error from worker:", e.data.message);
             }
         };
         return () => worker.terminate();
@@ -50,9 +50,9 @@ export default function Notepad() {
     const updatePositions = useCallback(() => {
         // This function gets called when the user clicks the update graph button
         // it should check state of worker and send nodes to it if not busy
-        if (workerstate === 'ready') {
-            workerRef.current.postMessage({ type: 'process', data: JSON.stringify(nodes) });
-            setWorkerstate('busy');
+        if (workerstate === "ready") {
+            workerRef.current.postMessage({ type: "process", data: JSON.stringify(nodes) });
+            setWorkerstate("busy");
         }
     });
 
@@ -75,7 +75,7 @@ export default function Notepad() {
 
     // saves notes to the server
     const saveNotes = useCallback(() => {
-        console.log('Notes saved:', nodes);
+        console.log("Notes saved:", nodes);
         const data = {
             nodes: nodes.map(node => ({
                 id: node.id,
@@ -85,7 +85,7 @@ export default function Notepad() {
             })),
             edges: initialEdges,
         };
-        fetchWithAuthPost({ getAccessTokenSilently, url: 'https://ericnagtegaal.ca/api/notes', body: data });
+        fetchWithAuthPost({ getAccessTokenSilently, url: "https://ericnagtegaal.ca/api/notes", body: data });
     });
 
     // creates a new note, does not save to server
@@ -94,7 +94,7 @@ export default function Notepad() {
         const newNode = {
             id: `${nodes.length + 1}`,
             position: { x: 50, y: nodes.length * 100 },
-            data: { label: `New Note ${nodes.length + 1}`, notes: '' },
+            data: { label: `New Note ${nodes.length + 1}`, notes: "" },
         };
         setNodes((nds) => nds.concat(newNode));
         setSelectedNode(newNode);
@@ -110,7 +110,7 @@ export default function Notepad() {
             (async () => {
                 const data = await fetchWithAuth({
                     getAccessTokenSilently,
-                    url: 'https://ericnagtegaal.ca/api/notes',
+                    url: "https://ericnagtegaal.ca/api/notes",
                 });
                 setNodes(JSON.parse(data[0].nodes).map((note) => ({
                     id: note.id,
@@ -127,7 +127,7 @@ export default function Notepad() {
     useEffect(() => {
         if (nodes.length > 0) {
             const newFuse = new Fuse(nodes, {
-                keys: ['data.notes', 'data.label'],
+                keys: ["data.notes", "data.label"],
                 threshold: 0.4,
                 includeMatches: true
             });
@@ -138,7 +138,7 @@ export default function Notepad() {
 
     return (<main className="text-gray-400 bg-gray-900 body-font">
         <Notepadnav newNote={newNote} saveNotes={saveNotes} searchNotes={searchNotes} updatePositions={updatePositions} />
-        <div style={{ width: '100vw', height: '100vh' }}>
+        <div style={{ width: "100vw", height: "100vh" }}>
             {/* react flow component - displays actual nodes */}
             <ReactFlow nodes={nodes}
                 edges={initialEdges}
@@ -168,14 +168,14 @@ export default function Notepad() {
                                     const node = result.item;
                                     onBlockOpen(node.position.x, node.position.y);
                                     setSearch(false);
-                                    setSearchValue('');
+                                    setSearchValue("");
                                     setSearchResults([]);
                                 }}>
 
-                                {result.item.data.label || 'No Label'}: {result.matches.map((match, matchIndex) => (
+                                {result.item.data.label || "No Label"}: {result.matches.map((match, matchIndex) => (
                                     <span key={matchIndex}>{match.indices.map(([start, end]) =>
                                         result.item.data.notes.substring(start, end + 1)
-                                    ).join(', ')} </span>))}
+                                    ).join(", ")} </span>))}
                             </li>
                         ))}
                     </ul>
@@ -195,7 +195,7 @@ export default function Notepad() {
                             }
 
                             setSearch(false);
-                            setSearchValue('');
+                            setSearchValue("");
                         }}
                     >
                         Search
@@ -218,7 +218,7 @@ export default function Notepad() {
                     <input
                         type="text"
                         className="w-full bg-gray-800 border p-3 mb-4 text-white rounded"
-                        defaultValue={selectedNode.data.label || ''}
+                        defaultValue={selectedNode.data.label || ""}
                         onChange={(e) => {
                             setSelectedNode({
                                 ...selectedNode,
@@ -228,7 +228,7 @@ export default function Notepad() {
                     />
                     <textarea
                         className="w-full bg-gray-800 h-80 border p-3"
-                        defaultValue={selectedNode.data.notes || ''}
+                        defaultValue={selectedNode.data.notes || ""}
                         onChange={(e) => {
                             setSelectedNode({
                                 ...selectedNode,

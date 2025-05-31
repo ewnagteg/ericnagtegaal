@@ -1,12 +1,12 @@
 import { BadgeCheckIcon, ChipIcon } from "@heroicons/react/solid";
 import React from "react";
 const skills = [
-    'React.js',
-    'HTML/css',
-    'js',
-    'ts',
-    'PostgreSQL',
-    'R'
+    "React.js",
+    "HTML/css",
+    "js",
+    "ts",
+    "PostgreSQL",
+    "R"
 ];
 export default function Skills() {
     return (

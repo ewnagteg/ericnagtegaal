@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+import React, { useEffect, useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function TeamTable({ team, setTeam, teamCost, setTeamCost }) {
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
@@ -9,21 +9,21 @@ export default function TeamTable({ team, setTeam, teamCost, setTeamCost }) {
         const fetchTeam = async () => {
             try {
                 const token = await getAccessTokenSilently({
-                    audience: 'https://ericnagtegaal.ca/api',
+                    audience: "https://ericnagtegaal.ca/api",
                 });
 
-                const res = await fetch('https://ericnagtegaal.ca/api/team', {
+                const res = await fetch("https://ericnagtegaal.ca/api/team", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
 
-                if (!res.ok) throw new Error('Failed to fetch team');
+                if (!res.ok) throw new Error("Failed to fetch team");
                 const data = await res.json();
                 setTeam(data);
                 setTeamCost(data.reduce((acc, player) => acc + parseInt(player.cost), 0));
             } catch (err) {
-                console.error('Failed to load team:', err);
+                console.error("Failed to load team:", err);
             }
         };
 

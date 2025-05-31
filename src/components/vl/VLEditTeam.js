@@ -1,36 +1,37 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from "react";
 import VLNavBar from "./VLNavBar";
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth0 } from "@auth0/auth0-react";
 import TeamTable from "./TeamTable.js";
-
+import { useMessage } from "../MessageProvider.js";
 
 export default function VLEditTeam() {
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
     const [players, setPlayers] = useState([]);
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
     const [team, setTeam] = useState([]);
     const [loading, setLoading] = useState(true);
     const [teamCost, setTeamCost] = useState(0);
     const [search, setSearch] = useState("");
     const [sortAsc, setSortAsc] = useState(true);
+    const { setMessage } = useMessage();
 
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
                 const token = await getAccessTokenSilently({
-                    audience: 'https://ericnagtegaal.ca/api',
+                    audience: "https://ericnagtegaal.ca/api",
                 });
-                const res = await fetch('https://ericnagtegaal.ca/api/players', {
+                const res = await fetch("https://ericnagtegaal.ca/api/players", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                if (!res.ok) throw new Error('Failed to fetch players');
+                if (!res.ok) throw new Error("Failed to fetch players");
                 const data = await res.json();
                 setPlayers(data);
                 setLoading(false);
             } catch (err) {
-                console.error('Failed to load players:', err);
+                console.error("Failed to load players:", err);
             }
         };
 
@@ -57,14 +58,15 @@ export default function VLEditTeam() {
 
             const data = await res.json();
             setTeam((prev) => [...prev, player]);
-            setError('');
+            setError("");
             setTeamCost(team.reduce((acc, arrplayer) => acc + parseInt(arrplayer.cost), 0) + player.cost);
+            setMessage("Player added:", data)
             console.log("Player added:", data);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: "smooth" });
         } catch (err) {
             setError(`Failed to Add Player: ${player.name}`)
             console.error("Add player error:", err);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
     };
 

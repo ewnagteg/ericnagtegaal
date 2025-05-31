@@ -1,11 +1,11 @@
 import React from "react";
 import Navbar from "./NavBar";
 import Contact from "./Contact";
-import About from './About.js';
-import Projects from './Projects.js';
+import About from "./About.js";
+import Projects from "./Projects.js";
 import Graph from "./Graph.js";
 import { Link } from "react-router-dom";
-import ReactGA from 'react-ga4';
+import ReactGA from "react-ga4";
 
 export default function Home() {
     return (<main className="text-gray-400 bg-gray-900 body-font">
@@ -36,9 +36,9 @@ export default function Home() {
                     className="text-indigo-400 hover:underline"
                     onClick={() => {
                         ReactGA.event({
-                            category: 'Navigation',
-                            action: 'Click Articles Link',
-                            label: 'Home Page'
+                            category: "Navigation",
+                            action: "Click Articles Link",
+                            label: "Home Page"
                         });
                     }}
                 >

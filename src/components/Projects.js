@@ -1,7 +1,7 @@
 import { ChipIcon } from "@heroicons/react/solid";
 import React from "react";
 import { Link } from "react-router-dom";
-import ReactGA from 'react-ga4';
+import ReactGA from "react-ga4";
 
 
 export default function Projects() {
@@ -34,9 +34,9 @@ export default function Projects() {
                                     className="text-blue-400 hover:underline"
                                     onClick={() => {
                                         ReactGA.event({
-                                            category: 'Navigation',
-                                            action: 'Click Articles Link',
-                                            label: 'Home Page'
+                                            category: "Navigation",
+                                            action: "Click Articles Link",
+                                            label: "Home Page"
                                         });
                                     }}
                                 > View App </Link>
@@ -48,7 +48,7 @@ export default function Projects() {
                         <div className="bg-gray-800 rounded flex flex-col p-4 h-full items-start">
                             <h2 className="text-lg font-bold text-white mb-2">Gift Recommendation App</h2>
                             <p className="text-white mb-2">
-                                Designed and built an intelligent system that recommends personalized gifts based on users' social media activity. Developed backend in Python and used Selenium to scrape and group Pinterest data. Applied Cosine Similarity to match gift ideas with user preferences. Contributed to a responsive React.js frontend.
+                                Designed and built an intelligent system that recommends personalized gifts based on users" social media activity. Developed backend in Python and used Selenium to scrape and group Pinterest data. Applied Cosine Similarity to match gift ideas with user preferences. Contributed to a responsive React.js frontend.
                             </p>
                             <span className="title-font font-medium text-gray-400 text-sm">
                                 Tech Stack: Python, Selenium, Cosine Similarity, React.js
