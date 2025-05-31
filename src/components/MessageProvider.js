@@ -20,7 +20,7 @@ export const MessageProvider = ({ children }) => {
                                setMessage("");
                             }}
                         >
-                            Save
+                            Close
                         </button>
                     </div>
                 </div>
