@@ -19,39 +19,39 @@ ReactGA.initialize(TRACKING_ID);
 
 
 function App() {
-  useEffect(() => {
-    ReactGA.send("pageview"); // Tracks initial page load
-  }, []);
-  return (
-    <MathJaxContext>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/projects" element={<Project />} />
-          <Route path="/articles" element={<Articles />} />
-          <Route path="/login" element={<LoginRedirect />} />
-          <Route
-            path="/notepad"
-            element={<AuthenticationGuard component={NotepadProvider} />}
-          />
-          <Route
-            path="/vl"
-            element={<AuthenticationGuard component={VLApp} />}
-          />
-          <Route
-            path="/edit-team"
-            element={<AuthenticationGuard component={VLEditTeam} />}
-          />
-          <Route
-            path="/stats"
-            element={<AuthenticationGuard component={VLGraphStats} />}
-          />
-          <Route
-            path="/profile"
-            element={<AuthenticationGuard component={VLProfile} />}
-          />
-        </Routes>
-    </MathJaxContext>
-  );
+    useEffect(() => {
+        ReactGA.send("pageview"); // Tracks initial page load
+    }, []);
+    return (
+        <MathJaxContext>
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/projects" element={<Project />} />
+                <Route path="/articles" element={<Articles />} />
+                <Route path="/login" element={<LoginRedirect />} />
+                <Route
+                    path="/notepad"
+                    element={<AuthenticationGuard component={NotepadProvider} />}
+                />
+                <Route
+                    path="/vl"
+                    element={<AuthenticationGuard component={VLApp} />}
+                />
+                <Route
+                    path="/edit-team"
+                    element={<AuthenticationGuard component={VLEditTeam} />}
+                />
+                <Route
+                    path="/stats"
+                    element={<AuthenticationGuard component={VLGraphStats} />}
+                />
+                <Route
+                    path="/profile"
+                    element={<AuthenticationGuard component={VLProfile} />}
+                />
+            </Routes>
+        </MathJaxContext>
+    );
 }
 
 export default App;

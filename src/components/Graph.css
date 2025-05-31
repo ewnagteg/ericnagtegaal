@@ -1,8 +1,11 @@
 .scene {
 
-    max-width: 90%; /* Make the scene take up 90% of the container's width */
-    max-height: 90%; /* Make the scene take up 90% of the container's height */
-    margin: auto; /* Center it horizontally */
+    max-width: 90%;
+    /* Make the scene take up 90% of the container's width */
+    max-height: 90%;
+    /* Make the scene take up 90% of the container's height */
+    margin: auto;
+    /* Center it horizontally */
 
 
     display: flex;
@@ -41,15 +44,17 @@
     transform-origin: left center;
 }
 
-  
+
 @keyframes rotateGraph {
-    0% { transform: rotateX(0deg) rotateY(0deg); }
-    100% { transform: rotateX(0deg) rotateY(360deg); }
+    0% {
+        transform: rotateX(0deg) rotateY(0deg);
+    }
+
+    100% {
+        transform: rotateX(0deg) rotateY(360deg);
+    }
 }
 
 .clip-triangle {
     clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
-  }
-
-
-  
+}

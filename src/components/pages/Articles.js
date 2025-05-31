@@ -15,7 +15,7 @@ export default function Articles() {
             <Navbar />
 
             <div className="container px-5 py-10 mx-auto min-h-screen space-y-8">
-                
+
                 <section id="DQN" className="flex-1 pt-40">
                     <h2 className="text-lg font-bold text-white mb-2">
                         DQN with SNN

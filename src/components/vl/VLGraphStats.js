@@ -70,7 +70,7 @@ export default function StatsPage() {
             fetchStats();
         }
     }, [getAccessTokenSilently, isAuthenticated]);
-    
+
     return (
         <main className="text-gray-400 bg-gray-900 body-font">
             <VLNavBar />

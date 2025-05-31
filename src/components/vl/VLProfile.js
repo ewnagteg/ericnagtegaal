@@ -25,7 +25,7 @@ export default function VLProfile() {
                 setProfile(data);
                 if (data[0]?.username) {
                     setUsername(data[0].username); // Pre-fill form
-                  }
+                }
                 setLoading(false);
             } catch (err) {
                 console.error('Failed to load players:', err);
@@ -54,9 +54,9 @@ export default function VLProfile() {
             if (!res.ok) throw new Error("Failed to add player");
 
             setProfile((prev) =>
-            prev.length === 0
-                ? [{ user_id: "unknown", username }]
-                : [{ ...prev[0], username }]
+                prev.length === 0
+                    ? [{ user_id: "unknown", username }]
+                    : [{ ...prev[0], username }]
             );
         } catch (err) {
             console.error("Update Username error:", err);

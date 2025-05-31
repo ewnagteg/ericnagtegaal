@@ -23,7 +23,7 @@ export default function Projects() {
                         <div className="bg-gray-800 rounded flex flex-col p-4 h-full items-start">
                             <h2 className="text-lg font-bold text-white mb-2">Fantasy League</h2>
                             <p className="text-white mb-2">
-                            Built a web application for a fantasy league &#40;for Valorant ESport&#41; focused on the upcoming Masters tournament. Developed secure user authentication, profile editing, and a dynamic dashboard that tracks player stats over time. Designed and queried a relational SQLite database to aggregate performance data and visualize trends using Chart.js. Backend powered by Node.js and Express, with a responsive frontend in React.
+                                Built a web application for a fantasy league &#40;for Valorant ESport&#41; focused on the upcoming Masters tournament. Developed secure user authentication, profile editing, and a dynamic dashboard that tracks player stats over time. Designed and queried a relational SQLite database to aggregate performance data and visualize trends using Chart.js. Backend powered by Node.js and Express, with a responsive frontend in React.
                             </p>
                             <span className="title-font font-medium text-gray-400 text-sm">
                                 Tech Stack: React.js, Node.js, SQLite, Auth0, Chart.js

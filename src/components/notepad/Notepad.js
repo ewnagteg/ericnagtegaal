@@ -5,6 +5,7 @@ import { fetchWithAuth, fetchWithAuthPost } from '../../api/fetchWithAuth';
 import '@xyflow/react/dist/style.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import Fuse from 'fuse.js';
+import { useMessage } from "./MessageContext";
 
 const initialNodes = [
 ];
@@ -20,6 +21,7 @@ export default function Notepad() {
     const { setViewport } = useReactFlow();
     const workerRef = useRef(null);
     const [workerstate, setWorkerstate] = useState('loading');
+    const { setMessage } = useMessage();
 
     useEffect(() => {
         workerRef.current = new Worker('tfidfworker.js');;
@@ -27,7 +29,7 @@ export default function Notepad() {
         // currently this worker doesnt load anything so fine to set it to ready
         setWorkerstate('ready');
         worker.onmessage = (e) => {
-           if (e.data.type === 'result') {
+            if (e.data.type === 'result') {
                 console.log('Received result:', e.data);
                 let positions = e.data.data;
                 setWorkerstate('ready');
@@ -135,7 +137,7 @@ export default function Notepad() {
     }, [nodes]);
 
     return (<main className="text-gray-400 bg-gray-900 body-font">
-        <Notepadnav newNote={newNote} saveNotes={saveNotes} searchNotes={searchNotes} updatePositions={updatePositions}/>
+        <Notepadnav newNote={newNote} saveNotes={saveNotes} searchNotes={searchNotes} updatePositions={updatePositions} />
         <div style={{ width: '100vw', height: '100vh' }}>
             {/* react flow component - displays actual nodes */}
             <ReactFlow nodes={nodes}
@@ -156,8 +158,6 @@ export default function Notepad() {
                         console.log(fuse.search(e.target.value));
                         setSearchResults(fuse.search(e.target.value, { limit: 3 }));
                         setSearchValue(e.target.value);
-                        // TODO: Implement fuse.js search for fuzzy matches
-                        // then set matches and they would display in a list below
                     }}
                 />
                 {searchResults.length > 0 &&
@@ -241,7 +241,7 @@ export default function Notepad() {
                         <button
                             className="bg-blue-500 text-white px-3 py-1 rounded"
                             onClick={() => {
-                                // Save logic here, e.g., update nodes
+                                // Save logic here, eg, update nodes
                                 setNodes((prevNodes) =>
                                     prevNodes.map((node) =>
                                         node.id === selectedNode.id ? { ...node, data: selectedNode.data } : node

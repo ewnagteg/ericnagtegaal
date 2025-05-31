@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo  } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import VLNavBar from "./VLNavBar";
 import { useAuth0 } from '@auth0/auth0-react';
 import TeamTable from "./TeamTable.js";
