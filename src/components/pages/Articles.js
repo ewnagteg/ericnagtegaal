@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import Navbar from "./NavBar";
-import Graph from "./Graph.js";
+import Navbar from "../NavBar.js";
+import Graph from "../Graph.js";
 export default function Articles() {
     useEffect(() => {
         // Find all elements inside game boards

@@ -1,6 +1,6 @@
 // components/StatsPage.js
 import React, { useEffect, useState } from "react";
-import LineChart from "./LineChart.js";
+import LineChart from "../LineChart.js";
 import VLNavBar from "./VLNavBar.js";
 import { useAuth0 } from "@auth0/auth0-react";
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { ReactFlow, useNodesState, useReactFlow } from '@xyflow/react';
 import Notepadnav from './Notepadnav.js';
-import { fetchWithAuth, fetchWithAuthPost } from '../api/fetchWithAuth';
+import { fetchWithAuth, fetchWithAuthPost } from '../../api/fetchWithAuth';
 import '@xyflow/react/dist/style.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import Fuse from 'fuse.js';

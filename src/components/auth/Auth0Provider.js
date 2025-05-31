@@ -3,15 +3,6 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 
-{/* <Auth0Provider
-    domain="dev-2jyg32pje8zwyjio.us.auth0.com"
-    clientId="9YlOZjMuVlMt61tjYElHXkDUqRKeYa8N"
-    authorizationParams={{
-      redirect_uri: window.location.pathname
-    }}
-    onRedirectCallback={onRedirectCallback} */}
-
-
 export const Auth0ProviderWithNavigate = ({ children }) => {
   const navigate = useNavigate();
 
