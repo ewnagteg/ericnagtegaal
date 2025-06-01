@@ -3,27 +3,19 @@ import React, { useEffect, useState } from "react";
 import LineChart from "../LineChart.js";
 import VLNavBar from "./VLNavBar.js";
 import { useAuth0 } from "@auth0/auth0-react";
+import { fetchWithAuth } from "../../api/fetchWithAuth";
 
 export default function StatsPage() {
     const [chartData, setChartData] = useState(null);
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
     const [totals, setTotals] = useState([]);
-    const [search, setSearch] = useState("");
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const token = await getAccessTokenSilently({
-                    audience: "https://ericnagtegaal.ca/api",
-                });
-                const res = await fetch("https://ericnagtegaal.ca/api/stats", {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    },
-                });
-                const data = await res.json();
+                const data = await fetchWithAuth({ getAccessTokenSilently, url: "/stats"});
 
-                // Group kills by user and date
+                // group kills by user and date
                 const grouped = {};
                 const totalKillsByUser = {};
 
@@ -36,7 +28,7 @@ export default function StatsPage() {
 
                 const allDates = [...new Set(data.map(row => row.match_date))].sort();
 
-                // Prepare chart datasets
+                // prepare chart datasets
                 const datasets = Object.entries(grouped).map(([username, stats], i) => {
                     let cumulative = 0;
                     return {
@@ -56,7 +48,6 @@ export default function StatsPage() {
                     datasets,
                 });
 
-                // Prepare totals array for the table (sorted descending by kills)
                 const totalsArray = Object.entries(totalKillsByUser)
                     .map(([user_id, kills]) => ({ user_id, kills }))
                     .sort((a, b) => b.kills - a.kills);

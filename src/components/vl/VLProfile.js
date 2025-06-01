@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import VLNavBar from "./VLNavBar";
 import { useAuth0 } from "@auth0/auth0-react";
+import { fetchWithAuth, fetchWithAuthPost } from "../../api/fetchWithAuth";
 
 
 export default function VLProfile() {
@@ -12,16 +13,7 @@ export default function VLProfile() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const token = await getAccessTokenSilently({
-                    audience: "https://ericnagtegaal.ca/api",
-                });
-                const res = await fetch("https://ericnagtegaal.ca/api/profile", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                if (!res.ok) throw new Error("Failed to fetch players");
-                const data = await res.json();
+                const data = await fetchWithAuth({ getAccessTokenSilently, url: "/profile"});
                 setProfile(data);
                 if (data[0]?.username) {
                     setUsername(data[0].username); // Pre-fill form
@@ -40,18 +32,7 @@ export default function VLProfile() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const token = await getAccessTokenSilently({
-                audience: "https://ericnagtegaal.ca/api",
-            });
-            const res = await fetch("https://ericnagtegaal.ca/api/profile", {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ username }),
-            });
-            if (!res.ok) throw new Error("Failed to add player");
+            fetchWithAuthPost({ getAccessTokenSilently, url: "/profile", body: username });
 
             setProfile((prev) =>
                 prev.length === 0

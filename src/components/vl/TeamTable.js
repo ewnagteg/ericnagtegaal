@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { fetchWithAuth, fetchWithAuthPost } from "../../api/fetchWithAuth";
 
 export default function TeamTable({ team, setTeam, teamCost, setTeamCost }) {
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();

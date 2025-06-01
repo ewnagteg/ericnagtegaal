@@ -4,11 +4,12 @@ export async function fetchWithAuth({
   getAccessTokenSilently,
   url,
   audience = DEFAULT_AUDIENCE,
+  prependBase = true,
   options = {},
 }) {
   const token = await getAccessTokenSilently({ audience });
-
-  const res = await fetch(url, {
+  const fullUrl = prependBase ? DEFAULT_AUDIENCE + url : url; 
+  const res = await fetch(fullUrl, {
     ...options,
     headers: {
       ...(options.headers || {}),
@@ -28,11 +29,12 @@ export async function fetchWithAuthPost({
   url,
   body,
   audience = DEFAULT_AUDIENCE,
+  prependBase = true,
   options = {},
 }) {
   const token = await getAccessTokenSilently({ audience });
-
-  const res = await fetch(url, {
+  const fullUrl = prependBase ? DEFAULT_AUDIENCE + url : url; 
+  const res = await fetch(fullUrl, {
     ...options,
     headers: {
       ...(options.headers || {}),

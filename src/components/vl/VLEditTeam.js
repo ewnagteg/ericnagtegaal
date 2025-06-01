@@ -3,11 +3,11 @@ import VLNavBar from "./VLNavBar";
 import { useAuth0 } from "@auth0/auth0-react";
 import TeamTable from "./TeamTable.js";
 import { useMessage } from "../MessageProvider.js";
+import { fetchWithAuth, fetchWithAuthPost } from "../../api/fetchWithAuth";
 
 export default function VLEditTeam() {
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
     const [players, setPlayers] = useState([]);
-    const [error, setError] = useState("");
     const [team, setTeam] = useState([]);
     const [loading, setLoading] = useState(true);
     const [teamCost, setTeamCost] = useState(0);
@@ -15,23 +15,16 @@ export default function VLEditTeam() {
     const [sortAsc, setSortAsc] = useState(true);
     const { setMessage } = useMessage();
 
+    // fetch players on users team
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
-                const token = await getAccessTokenSilently({
-                    audience: "https://ericnagtegaal.ca/api",
-                });
-                const res = await fetch("https://ericnagtegaal.ca/api/players", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                if (!res.ok) throw new Error("Failed to fetch players");
-                const data = await res.json();
+                const data = await fetchWithAuth({ getAccessTokenSilently, url: "/players" });
                 setPlayers(data);
                 setLoading(false);
             } catch (err) {
                 console.error("Failed to load players:", err);
+                setMessage("Failed to load players:" + err);
             }
         };
 
@@ -42,29 +35,14 @@ export default function VLEditTeam() {
 
     const handleAddPlayer = async (player) => {
         try {
-            const token = await getAccessTokenSilently({
-                audience: "https://ericnagtegaal.ca/api",
-            });
-            const res = await fetch("https://ericnagtegaal.ca/api/team/add", {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(player),
-            });
-
-            if (!res.ok) throw new Error("Failed to add player");
-
-            const data = await res.json();
+            const data = await fetchWithAuthPost({ getAccessTokenSilently, url: "/team/add", body: player });;
             setTeam((prev) => [...prev, player]);
-            setError("");
             setTeamCost(team.reduce((acc, arrplayer) => acc + parseInt(arrplayer.cost), 0) + player.cost);
-            setMessage("Player added:", data)
+            setMessage("Player added: " + player.name);
             console.log("Player added:", data);
             window.scrollTo({ top: 0, behavior: "smooth" });
         } catch (err) {
-            setError(`Failed to Add Player: ${player.name}`)
+            setMessage(`Failed to Add Player: ${player.name} Error: ${err}`);
             console.error("Add player error:", err);
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
@@ -105,7 +83,6 @@ export default function VLEditTeam() {
                 </p>
             </div>
             <TeamTable team={team} setTeam={setTeam} teamCost={teamCost} setTeamCost={setTeamCost} />
-            <div className="text-white sm:text-4xl text-3xl mb-4 font-medium title-font">{error}</div>
             <section>
                 <h2 className="text-white sm:text-4xl text-3xl mb-4 font-medium title-font">All Players</h2>
                 <input
