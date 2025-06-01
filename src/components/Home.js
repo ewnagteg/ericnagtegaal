@@ -10,11 +10,11 @@ import ReactGA from "react-ga4";
 export default function Home() {
     return (<main className="text-gray-400 bg-gray-900 body-font">
         <Navbar />
-        <div className="max-w-[85%] mx-auto flex justify-center items-start">
-            <div className="w-1/2 flex">
+        <div className="max-w-[85%] mx-auto flex flex-col md:flex-row justify-center items-start">
+            <div className="w-full md:w-1/2 flex">
                 <About />
             </div>
-            <div className="w-1/2 flex">
+            <div className="w-full md:w-1/2 flex max-w-full mx-auto h-auto md:h-full">
                 <Graph />
             </div>
         </div>
