@@ -337,41 +337,15 @@ function positionNodes(matrix, centroids, clusterMap, maxIterations = 100, lambd
     return nodePositions;
 }
 
-function normalizePositions(nodePositions, desiredAverageDistance) {
-    let totalDistance = 0;
-    let count = 0;
-    for (let i = 0; i < nodePositions.length; i++) {
-        for (let j = i + 1; j < nodePositions.length; j++) {
-            const dist = euclideanDistance(nodePositions[i], nodePositions[j]);
-            totalDistance += dist;
-            count++;
-        }
-    }
-    const currentAverageDistance = totalDistance / count;
-    const scalingFactor = desiredAverageDistance / currentAverageDistance;
-    return nodePositions.map((pos) => ({
-        x: pos.x * scalingFactor,
-        y: pos.y * scalingFactor,
-    }));
-}
-
-function normalizePositions(nodePositions, desiredAverageDistance, desiredCenter = { x: 50, y: 0 }) {
-    let totalDistance = 0;
+function normalizePositions(nodePositions, desiredCenter = { x: 50, y: 0 }) {
     let count = 0;
     let totalX = 0;
     let totalY = 0;
     for (let i = 0; i < nodePositions.length; i++) {
         totalX += nodePositions[i].x;
         totalY += nodePositions[i].y;
-        for (let j = i + 1; j < nodePositions.length; j++) {
-            const dist = euclideanDistance(nodePositions[i], nodePositions[j]);
-            totalDistance += dist;
-            count++;
-        }
+        count++;
     }
-
-    const currentAverageDistance = totalDistance / count;
-    const scalingFactor = desiredAverageDistance / currentAverageDistance;
 
     const currentCenter = {
         x: totalX / nodePositions.length,
@@ -384,8 +358,8 @@ function normalizePositions(nodePositions, desiredAverageDistance, desiredCenter
     };
 
     return nodePositions.map((pos) => ({
-        x: pos.x * scalingFactor + offset.x,
-        y: pos.y * scalingFactor + offset.y,
+        x: pos.x + offset.x,
+        y: pos.y + offset.y,
     }));
 }
 
@@ -398,7 +372,8 @@ onmessage = async (e) => {
             return;
         }
         const N = e.data.data.length;
-        const k = e.data.k || 2; // default to 2 clusters if not specified
+        const k = e.data.config.k || 2; // default to 2 clusters if not specified
+        const lambda = e.data.config.lambda || 15;
         if (N < k) {
             postMessage({ type: 'error', message: 'k must be less than the number of data points' });
             return;
@@ -455,9 +430,9 @@ onmessage = async (e) => {
             }
             matrix.push(row);
         }
-        const cluster = kmeans(matrix, 2);
-        const positions = positionNodes(matrix, cluster.centroids, cluster.clusters, 150, 14);
+        const cluster = kmeans(matrix, k);
+        const positions = positionNodes(matrix, cluster.centroids, cluster.clusters, 100, lambda);
         
-        postMessage({ type: 'result', data: positions, clusters: cluster.clusters, centroids: cluster.centroids, nt: nt });
+        postMessage({ type: 'result', data: normalizePositions(positions), clusters: cluster.clusters, centroids: cluster.centroids, nt: nt });
     }
 }

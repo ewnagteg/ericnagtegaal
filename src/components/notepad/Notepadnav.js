@@ -1,6 +1,6 @@
 import React from "react";
 import { HashLink } from "react-router-hash-link";
-export default function Notepadnav({ newNote, saveNotes, searchNotes, updatePositions }) {
+export default function Notepadnav({ newNote, saveNotes, searchNotes, updateNodes }) {
     return (
         <header className="bg-gray-800 md:sticky top-0 z-10">
             <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
@@ -29,7 +29,7 @@ export default function Notepadnav({ newNote, saveNotes, searchNotes, updatePosi
                         Search
                     </button>
                     <button className="mr-5 hover:text-white"
-                        onClick={() => { updatePositions() }}>
+                        onClick={() => { updateNodes() }}>
                         Update Graph
                     </button>
                 </div>

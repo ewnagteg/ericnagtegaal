@@ -21,7 +21,20 @@ export default function Notepad() {
     const { setViewport } = useReactFlow();
     const workerRef = useRef(null);
     const [workerstate, setWorkerstate] = useState("loading");
+    const [config, setConfig] = useState({ k: 2, lambda: 15 });
+    const [configMenue, setConfigMenu] = useState(false);
     const { setMessage } = useMessage();
+
+    useEffect(() => {
+        // Set the message only when the component is first mounted
+        setMessage(`This is a basic notepad made with react flow. 
+                    You can create/edit notes and position them in 2d.
+                    Notes will not save until you click save in nav bar.
+                    Update Node graph will use K-means with tf idf to cluster your notes, 
+                    it uses a sort of particle sim to position nodes in 2d space.
+                    `);
+    }, [setMessage]);
+
 
     useEffect(() => {
         workerRef.current = new Worker("tfidfworker.js");;
@@ -51,9 +64,13 @@ export default function Notepad() {
         // This function gets called when the user clicks the update graph button
         // it should check state of worker and send nodes to it if not busy
         if (workerstate === "ready") {
-            workerRef.current.postMessage({ type: "process", data: JSON.stringify(nodes) });
+            workerRef.current.postMessage({ type: "process", data: JSON.stringify(nodes), config: config });
             setWorkerstate("busy");
         }
+    });
+
+    const updateNodes = useCallback(() => {
+        setConfigMenu(true);
     });
 
     // sets the selected node, this will display the edit node UI
@@ -76,6 +93,7 @@ export default function Notepad() {
     // saves notes to the server
     const saveNotes = useCallback(() => {
         console.log("Notes saved:", nodes);
+        setMessage("Saved Notes");
         const data = {
             nodes: nodes.map(node => ({
                 id: node.id,
@@ -85,7 +103,7 @@ export default function Notepad() {
             })),
             edges: initialEdges,
         };
-        fetchWithAuthPost({ getAccessTokenSilently, url: "https://ericnagtegaal.ca/api/notes", body: data });
+        fetchWithAuthPost({ getAccessTokenSilently, url: "/notes", body: data });
     });
 
     // creates a new note, does not save to server
@@ -110,7 +128,7 @@ export default function Notepad() {
             (async () => {
                 const data = await fetchWithAuth({
                     getAccessTokenSilently,
-                    url: "https://ericnagtegaal.ca/api/notes",
+                    url: "/notes",
                 });
                 setNodes(JSON.parse(data[0].nodes).map((note) => ({
                     id: note.id,
@@ -137,7 +155,7 @@ export default function Notepad() {
     }, [nodes]);
 
     return (<main className="text-gray-400 bg-gray-900 body-font">
-        <Notepadnav newNote={newNote} saveNotes={saveNotes} searchNotes={searchNotes} updatePositions={updatePositions} />
+        <Notepadnav newNote={newNote} saveNotes={saveNotes} searchNotes={searchNotes} updateNodes={updateNodes} />
         <div style={{ width: "100vw", height: "100vh" }}>
             {/* react flow component - displays actual nodes */}
             <ReactFlow nodes={nodes}
@@ -145,6 +163,61 @@ export default function Notepad() {
                 onNodeClick={onNodeClick}
                 onNodesChange={onNodesChanges}
                 fitView />
+            {/* allows config of k means */}
+            {configMenue && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex justify-center items-center z-50"><div className="bg-gray-900 p-4 rounded shadow-lg max-w-xl w-full max-h-xl">
+                <h2 className="text-xl font-bold mb-2">Update Nodes</h2>
+                <p>Select number of clusters notes should be in</p>
+                <select
+                    className="w-full bg-gray-800 border p-3 mb-4 text-white rounded"
+                    value={config.k} // Set the default value to the current value of `k` in `config`
+                    onChange={(e) => {
+                        const selectedValue = parseInt(e.target.value, 10);
+                        setConfig((prevConfig) => ({
+                            ...prevConfig,
+                            k: selectedValue,
+                        }));
+                    }}
+                >
+                    {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
+                        <option key={num} value={num}>
+                            {num}
+                        </option>
+                    ))}
+                </select>
+
+                <input
+                    type="number"
+                    className="w-full bg-gray-800 border p-3 mb-4 text-white rounded"
+                    value={config.lambda} // Set the default value to the current value of `lambda` in `config`
+                    onChange={(e) => {
+                        const selectedValue = parseInt(e.target.value, 10);
+                        setConfig((prevConfig) => ({
+                            ...prevConfig,
+                            lambda: selectedValue,
+                        }));
+                    }}
+                />
+                <div className="mt-4 flex justify-end">
+
+                    <button
+                        className="bg-blue-500 text-white px-3 py-1 ml-4 rounded"
+                        onClick={() => {
+                            setConfigMenu(false);
+                            updatePositions();
+                        }}
+                    >
+                        Run
+                    </button>
+                    <button
+                        className="bg-blue-500 text-white px-3 py-1 ml-4 rounded"
+                        onClick={() => {
+                            setConfigMenu(false);
+                        }}
+                    >
+                        Close
+                    </button>
+                </div>
+            </div></div>}
             {/* search ui */}
             {(search && !selectedNode) && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex justify-center items-center z-50"><div className="bg-gray-900 p-4 rounded shadow-lg max-w-xl w-full max-h-xl">
                 <h2 className="text-xl font-bold mb-2">Search Nodes:</h2>
@@ -172,8 +245,8 @@ export default function Notepad() {
                                     setSearchResults([]);
                                 }}>
 
-                                {result.item.data.label || "No Label"}: {result.matches.map((match, matchIndex) => (
-                                    <span key={matchIndex}>{match.indices.map(([start, end]) =>
+                                {result.item.data.label || "No Label"}: {result.matches.slice(0, 4).map((match, matchIndex) => (
+                                    <span key={matchIndex}>{match.indices.slice(0, 4).map(([start, end]) =>
                                         result.item.data.notes.substring(start, end + 1)
                                     ).join(", ")} </span>))}
                             </li>
@@ -239,7 +312,26 @@ export default function Notepad() {
                     />
                     <div className="mt-4 flex justify-end">
                         <button
-                            className="bg-blue-500 text-white px-3 py-1 rounded"
+                            className="bg-blue-500 text-white px-3 py-1 ml-4 rounded"
+                            onClick={() => {
+                                setSelectedNode(null);
+                            }}
+                        >
+                            Close
+                        </button>
+                        <button
+                            className="bg-blue-500 text-white px-3 py-1 ml-4 rounded"
+                            onClick={() => {
+                                setNodes((prevNodes) =>
+                                    prevNodes.filter((node) => node.id !== selectedNode.id)
+                                );
+                                setSelectedNode(null);
+                            }}
+                        >
+                            Delete
+                        </button>
+                        <button
+                            className="bg-blue-500 text-white px-3 py-1 ml-4 rounded"
                             onClick={() => {
                                 // Save logic here, eg, update nodes
                                 setNodes((prevNodes) =>
@@ -250,7 +342,7 @@ export default function Notepad() {
                                 setSelectedNode(null);
                             }}
                         >
-                            Save
+                            Apply
                         </button>
                     </div>
                 </div>
