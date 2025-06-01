@@ -26,6 +26,8 @@ function App() {
         <MathJaxContext>
             <Routes>
                 <Route path="/" element={<Home />} />
+                {/* resume link goes to this path */}
+                <Route path="/resume" element={<Home />} />
                 <Route path="/projects" element={<Project />} />
                 <Route path="/articles" element={<Articles />} />
                 <Route path="/login" element={<LoginRedirect />} />
