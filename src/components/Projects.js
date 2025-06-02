@@ -35,8 +35,38 @@ export default function Projects() {
                                     onClick={() => {
                                         ReactGA.event({
                                             category: "Navigation",
-                                            action: "Click Articles Link",
-                                            label: "Home Page"
+                                            action: "Click VL Link",
+                                            label: "VL"
+                                        });
+                                    }}
+                                > View App </Link>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Notepad App */}
+                    <div className="p-2 sm:w-1/2 w-full">
+                        <div className="bg-gray-800 rounded flex flex-col p-4 h-full items-start">
+                            <h2 className="text-lg font-bold text-white mb-2">Notepad App</h2>
+                            <img 
+                                src="notepaddemo.gif" 
+                                alt="Notepad Demo" 
+                                className="rounded mb-4 w-full"
+                            />
+                            <p className="text-white mb-2">
+                            Developed a web application for managing notes with features like 2D positioning, search, and create/update/delete functionality. Includes advanced clustering capabilities using TF-IDF and K-means algorithms, combined with a particle simulation to visually distribute notes into clusters.
+                            </p>
+                            <span className="title-font font-medium text-gray-400 text-sm">
+                                Tech Stack: React.js, Node.js, SQLite, Auth0, Chart.js, React Flow
+                            </span>
+                            <div className="mt-3">
+                                <Link
+                                    to="/notepad"
+                                    className="text-blue-400 hover:underline"
+                                    onClick={() => {
+                                        ReactGA.event({
+                                            category: "Navigation",
+                                            action: "Click Notepad Link",
+                                            label: "Notepad"
                                         });
                                     }}
                                 > View App </Link>

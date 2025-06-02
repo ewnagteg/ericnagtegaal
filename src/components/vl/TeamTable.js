@@ -9,18 +9,7 @@ export default function TeamTable({ team, setTeam, teamCost, setTeamCost }) {
     useEffect(() => {
         const fetchTeam = async () => {
             try {
-                const token = await getAccessTokenSilently({
-                    audience: "https://ericnagtegaal.ca/api",
-                });
-
-                const res = await fetch("https://ericnagtegaal.ca/api/team", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (!res.ok) throw new Error("Failed to fetch team");
-                const data = await res.json();
+                const data = await fetchWithAuth({ getAccessTokenSilently, url: "/team"});
                 setTeam(data);
                 setTeamCost(data.reduce((acc, player) => acc + parseInt(player.cost), 0));
             } catch (err) {
@@ -35,21 +24,7 @@ export default function TeamTable({ team, setTeam, teamCost, setTeamCost }) {
 
     const handleRemovePlayer = async (player_id) => {
         try {
-            const token = await getAccessTokenSilently({
-                audience: "https://ericnagtegaal.ca/api",
-            });
-            const res = await fetch("https://ericnagtegaal.ca/api/team/delete", {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ player_id: player_id }),
-            });
-
-            if (!res.ok) throw new Error("Failed to add player");
-
-            const data = await res.json();
+            const data = await fetchWithAuthPost({ getAccessTokenSilently, url: "/team/delete", body: { player_id: player_id }});
             setTeam(prevTeam => {
                 const newTeam = prevTeam.filter(player => player.player_id !== player_id);
                 setTeamCost(newTeam.reduce((acc, player) => acc + parseInt(player.cost), 0));
