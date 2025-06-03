@@ -1,4 +1,3 @@
-// components/StatsPage.js
 import React, { useEffect, useState } from "react";
 import LineChart from "../LineChart.js";
 import VLNavBar from "./VLNavBar.js";

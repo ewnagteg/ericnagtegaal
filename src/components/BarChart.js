@@ -1,7 +1,8 @@
 
 import { Chart, registerables } from "chart.js";
-import React from "react";// components/BarChart.js
-import { BarChart } from "react-chartjs-2";
+import React from "react";
+import { Bar } from "react-chartjs-2";
+
 Chart.register(...registerables);
 
 export default function BarChart({ chartData }) {
@@ -11,10 +12,9 @@ export default function BarChart({ chartData }) {
             backgroundColor: "white",
         }}>
             <h2 style={{ textAlign: "center" }}></h2>
-            <BarChart
+            <Bar
                 data={chartData}
                 options={{
-
                 }}
             />
         </div>

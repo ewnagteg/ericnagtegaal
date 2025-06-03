@@ -1,6 +1,6 @@
 
 import { Chart, registerables } from "chart.js";
-import React from "react";// components/BarChart.js
+import React from "react";
 import { Line } from "react-chartjs-2";
 Chart.register(...registerables);
 
