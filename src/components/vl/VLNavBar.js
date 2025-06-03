@@ -11,6 +11,9 @@ export default function VLNavBar() {
                     </HashLink>
                 </div>
                 <div className="md:mr-auto md:ml-4 md:py-1 md:pl-4 md:border-l md:border-gray-700	flex flex-wrap items-center text-base justify-center">
+                    <HashLink to="/vl" className="mr-5 hover:text-white">
+                        VL Home
+                    </HashLink>
                     <HashLink to="/edit-team" className="mr-5 hover:text-white">
                         Edit Team
                     </HashLink>

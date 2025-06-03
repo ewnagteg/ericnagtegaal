@@ -4,6 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import TeamTable from "./TeamTable.js";
 import { useMessage } from "../MessageProvider.js";
 import { fetchWithAuth, fetchWithAuthPost } from "../../api/fetchWithAuth";
+import { Link } from "react-router-dom";
 
 export default function VLEditTeam() {
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
@@ -107,7 +108,14 @@ export default function VLEditTeam() {
                     <tbody>
                         {filteredAndSorted.map(player => (
                             <tr key={player.player_id}>
-                                <td className="border border-gray-300 px-4 py-2">{player.name}</td>
+                                <td className="border border-gray-300 px-4 py-2">
+                                    <Link
+                                        to={`/vl/player-stats/${player.name}`}
+                                        className="text-indigo-400 hover:underline"
+                                    >
+                                        {player.name}
+                                    </Link>
+                                </td>
                                 <td className="border border-gray-300 px-4 py-2">{player.player_id}</td>
                                 <td className="border border-gray-300 px-4 py-2">{player.cost}</td>
                                 <td className="border border-gray-300 px-4 py-2">
