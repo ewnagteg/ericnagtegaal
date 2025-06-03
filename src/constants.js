@@ -1,0 +1,1 @@
+export const LOCK_DATE = new Date('2025-06-06T12:00:00Z');
