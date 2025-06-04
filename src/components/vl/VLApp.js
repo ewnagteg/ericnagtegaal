@@ -32,8 +32,11 @@ export default function VLApp() {
     return (<main className="text-gray-400 bg-gray-900 body-font">
         <VLNavbar />
         <div className="container mx-auto flex flex-col items-center mx-auto min-h-screen">
-            <div className="container mx-auto flex md:flex-row mt-4 p-4">
-                {news && <div className="container mx-auto flex">
+            <div className="container mx-auto flex flex-col items-start mt-4">
+                <h2 className="text-white sm:text-3xl text-left">Announcements</h2>
+            </div>
+            <div className="container mx-auto flex md:flex-col mt-4 p-4">
+                {news && <div className="container mx-auto flex flex-col">
                     {news
                         .map(article => (
                             <div key={article.date} className="border-b border-gray-600 pb-4 mb-4">

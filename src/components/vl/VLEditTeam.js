@@ -5,6 +5,9 @@ import TeamTable from "./TeamTable.js";
 import { useMessage } from "../MessageProvider.js";
 import { fetchWithAuth, fetchWithAuthPost } from "../../api/fetchWithAuth";
 import { Link } from "react-router-dom";
+import { LOCK_DATE } from "../../constants.js";
+
+const LOCKED = Date.now() > LOCK_DATE;
 
 export default function VLEditTeam() {
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
@@ -13,7 +16,7 @@ export default function VLEditTeam() {
     const [loading, setLoading] = useState(true);
     const [teamCost, setTeamCost] = useState(0);
     const [search, setSearch] = useState("");
-    const [sortAsc, setSortAsc] = useState(true);
+    const [sortAsc, setSortAsc] = useState();
     const { setMessage } = useMessage();
 
     // fetch players on users team
@@ -55,9 +58,9 @@ export default function VLEditTeam() {
                 player.name.toLowerCase().includes(search.toLowerCase())
             )
             .sort((a, b) => {
-                if (a.name < b.name) return sortAsc ? -1 : 1;
-                if (a.name > b.name) return sortAsc ? 1 : -1;
-                return 0;
+                if (sortAsc == "A-Z" || sortAsc == "Z-A")
+                    return ((a.name < b.name) ? -1 : 1) * (sortAsc == "A-Z" ? 1 : -1);
+                return (a.cost < b.cost ? -1 : 1) * (sortAsc == "desc" ? 1 : -1);
             });
     }, [players, search, sortAsc]);
 
@@ -66,35 +69,38 @@ export default function VLEditTeam() {
         <div className="container mx-auto flex flex-col px-10 py-20 items-center mx-auto min-h-screen space-y-8">
             {loading && <div className="loader">Loading...</div>}
             <div>
-                <p>
-                    <h2 className="text-white sm:text-4xl text-3xl mb-4 font-medium title-font">About Edit Team</h2>
+                <div>
+                    <h2 className="text-white sm:text-2xl text-2xl mb-4 font-medium title-font">About Edit Team</h2>
                     This is the Edit Team page. You can add players to your team here. The cost of the team is calculated based on the players you select. The total cost of your team is displayed below.
                     <br />
                     <br />
                     Currently you can add and remove players from your team as you like because the backend is using previous finished turnament, specifically Valorant Masters 2024 - Shanghai.
                     <br />
                     <br />
-                    The cost of the players is an estimate of how many kills they would be expceted to get in the turnament. This is calculated based of aan average of the kills they got in previous turnaments.
+                    The cost of the players is an estimate of how many kills they would be expceted to get in the turnament. This is calculated based of an average of the kills they got in previous turnaments.
                     The model uses a ELO rating system to estimate expected placement of the teams in the turnament and multiplies the kills of the players to get the Cost.
                     <br />
                     <br />
                     For next masters turnament, the teams will be locked before the turnament starts and you will not be able to add or remove players from your team.
                     This is just configured for a demonstration and testing of the functionality of the app.
 
-                </p>
+                </div>
             </div>
             <TeamTable team={team} setTeam={setTeam} teamCost={teamCost} setTeamCost={setTeamCost} />
             <section>
-                <h2 className="text-white sm:text-4xl text-3xl mb-4 font-medium title-font">All Players</h2>
+                <h2 className="text-white sm:text-2xl text-2xl font-medium title-font">All Players</h2>
                 <input
                     type="text"
                     placeholder="Search player..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="sm:text-1 m-2 ml-0 p-2 border border-gray-400 rounded"
+                    className="sm:text-1 m-1 ml-0 p-2 border border-gray-400 rounded"
                 />
-                <button onClick={() => setSortAsc(!sortAsc)} className="sm:text-1 m-2 hover:underline hover:text-white">
-                    Sort: {sortAsc ? "A-Z" : "Z-A"}
+                <button onClick={() => setSortAsc(sortAsc == "Z-A" ? "A-Z" : sortAsc == "A-Z" ? "Z-A" : "A-Z")} className="sm:text-1 m-2 hover:underline hover:text-white">
+                    Sort Name: {sortAsc == 'A-Z' || sortAsc == 'A-Z' ? sortAsc : 'A-Z'}
+                </button>
+                <button onClick={() => setSortAsc(sortAsc == "asc" ? "desc" : sortAsc == "desc" ? "asc" : "desc")} className="sm:text-1 m-2 hover:underline hover:text-white">
+                    Sort Cost: {sortAsc == 'asc' || sortAsc == 'desc' ? sortAsc : 'asc'}
                 </button>
                 <table className="table-auto border border-gray-300 w-full">
                     <thead>
@@ -106,8 +112,8 @@ export default function VLEditTeam() {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredAndSorted.map(player => (
-                            <tr key={player.player_id}>
+                        {filteredAndSorted.map((player, index) => (
+                            <tr className={`hover:bg-gray-700  ${index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800'} `} key={player.player_id}>
                                 <td className="border border-gray-300 px-4 py-2">
                                     <Link
                                         to={`/vl/player-stats/${player.name}`}
@@ -119,7 +125,7 @@ export default function VLEditTeam() {
                                 <td className="border border-gray-300 px-4 py-2">{player.player_id}</td>
                                 <td className="border border-gray-300 px-4 py-2">{player.cost}</td>
                                 <td className="border border-gray-300 px-4 py-2">
-                                    <button className="hover:underline hover:text-white" onClick={() => handleAddPlayer(player)}>Add</button>
+                                    {!LOCKED && <button className="hover:underline hover:text-white" onClick={() => handleAddPlayer(player)}>Add</button>}
                                 </td>
                             </tr>
                         ))}
