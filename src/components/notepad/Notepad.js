@@ -111,7 +111,7 @@ export default function Notepad() {
     const newNote = useCallback(() => {
         const newNode = {
             id: `${nodes.length + 1}`,
-            position: { x: 50, y: nodes.length * 100 },
+            position: { x: 0, y: 0 },
             data: { label: `New Note ${nodes.length + 1}`, notes: "" },
         };
         setNodes((nds) => nds.concat(newNode));
@@ -312,7 +312,7 @@ export default function Notepad() {
                     />
                     <div className="mt-4 flex justify-end">
                         <button
-                            className="bg-blue-500 text-white px-3 py-1 ml-4 rounded"
+                            className="text-gray-300 bg-gray-700 px-3 py-1 ml-4 hover:bg-gray-800 transition rounded"
                             onClick={() => {
                                 setSelectedNode(null);
                             }}
@@ -320,7 +320,7 @@ export default function Notepad() {
                             Close
                         </button>
                         <button
-                            className="bg-blue-500 text-white px-3 py-1 ml-4 rounded"
+                            className="text-white bg-red-500 px-3 py-1 ml-4 hover:bg-red-600 transition rounded"
                             onClick={() => {
                                 setNodes((prevNodes) =>
                                     prevNodes.filter((node) => node.id !== selectedNode.id)
@@ -331,7 +331,7 @@ export default function Notepad() {
                             Delete
                         </button>
                         <button
-                            className="bg-blue-500 text-white px-3 py-1 ml-4 rounded"
+                            className="text-white bg-green-500 px-3 py-1 ml-4 hover:bg-green-600 transition rounded"
                             onClick={() => {
                                 // Save logic here, eg, update nodes
                                 setNodes((prevNodes) =>

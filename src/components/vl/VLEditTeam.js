@@ -35,7 +35,7 @@ export default function VLEditTeam() {
         if (isAuthenticated) {
             fetchPlayers();
         }
-    }, [getAccessTokenSilently, isAuthenticated]);
+    }, [getAccessTokenSilently, isAuthenticated, setMessage]);
 
     const handleAddPlayer = async (player) => {
         try {
@@ -58,9 +58,9 @@ export default function VLEditTeam() {
                 player.name.toLowerCase().includes(search.toLowerCase())
             )
             .sort((a, b) => {
-                if (sortAsc == "A-Z" || sortAsc == "Z-A")
-                    return ((a.name < b.name) ? -1 : 1) * (sortAsc == "A-Z" ? 1 : -1);
-                return (a.cost < b.cost ? -1 : 1) * (sortAsc == "desc" ? 1 : -1);
+                if (sortAsc === "A-Z" || sortAsc === "Z-A")
+                    return ((a.name < b.name) ? -1 : 1) * (sortAsc === "A-Z" ? 1 : -1);
+                return (a.cost < b.cost ? -1 : 1) * (sortAsc === "desc" ? 1 : -1);
             });
     }, [players, search, sortAsc]);
 
@@ -96,18 +96,20 @@ export default function VLEditTeam() {
                     onChange={(e) => setSearch(e.target.value)}
                     className="sm:text-1 m-1 ml-0 p-2 border border-gray-400 rounded"
                 />
-                <button onClick={() => setSortAsc(sortAsc == "Z-A" ? "A-Z" : sortAsc == "A-Z" ? "Z-A" : "A-Z")} className="sm:text-1 m-2 hover:underline hover:text-white">
-                    Sort Name: {sortAsc == 'A-Z' || sortAsc == 'A-Z' ? sortAsc : 'A-Z'}
+                <button onClick={() => setSortAsc(sortAsc === "Z-A" ? "A-Z" : sortAsc === "A-Z" ? "Z-A" : "A-Z")} className="sm:text-1 m-2 hover:underline hover:text-white">
+                    Sort Name: {sortAsc === 'A-Z' || sortAsc === 'A-Z' ? sortAsc : 'A-Z'}
                 </button>
-                <button onClick={() => setSortAsc(sortAsc == "asc" ? "desc" : sortAsc == "desc" ? "asc" : "desc")} className="sm:text-1 m-2 hover:underline hover:text-white">
-                    Sort Cost: {sortAsc == 'asc' || sortAsc == 'desc' ? sortAsc : 'asc'}
+                <button onClick={() => setSortAsc(sortAsc === "asc" ? "desc" : sortAsc === "desc" ? "asc" : "desc")} className="sm:text-1 m-2 hover:underline hover:text-white">
+                    Sort Cost: {sortAsc === 'asc' || sortAsc === 'desc' ? sortAsc : 'asc'}
                 </button>
                 <table className="table-auto border border-gray-300 w-full">
                     <thead>
-                        <tr>
+                        <tr className="bg-gray-600">
                             <th className="border border-gray-300 px-4 py-2 text-white font-bold">Name</th>
+                            <th className="border border-gray-300 px-4 py-2 text-white font-bold">VLR</th>
                             <th className="border border-gray-300 px-4 py-2 text-white font-bold">id</th>
                             <th className="border border-gray-300 px-4 py-2 text-white font-bold">Cost</th>
+                            <th className="border border-gray-300 px-4 py-2 text-white font-bold">Team</th>
                             <th className="border border-gray-300 px-4 py-2 text-white font-bold">Action</th>
                         </tr>
                     </thead>
@@ -122,8 +124,10 @@ export default function VLEditTeam() {
                                         {player.name}
                                     </Link>
                                 </td>
+                                <td className="border border-gray-300 px-4 py-2"><a href={`https://vlr.gg/player/${player.player_id}`} className="text-indigo-400 hover:underline">VLR</a></td>
                                 <td className="border border-gray-300 px-4 py-2">{player.player_id}</td>
                                 <td className="border border-gray-300 px-4 py-2">{player.cost}</td>
+                                <td className="border border-gray-300 px-4 py-2">{player.team}</td>
                                 <td className="border border-gray-300 px-4 py-2">
                                     {!LOCKED && <button className="hover:underline hover:text-white" onClick={() => handleAddPlayer(player)}>Add</button>}
                                 </td>

@@ -84,7 +84,7 @@ export default function VLProfile() {
                         </div>
                         <button
                             type="submit"
-                            className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
+                            className="w-full text-gray-300 bg-gray-700 py-2 px-4 rounded hover:bg-gray-800 transition"
                         >
                             Save
                         </button>

@@ -49,7 +49,7 @@ export default function TeamTable({ team, setTeam, teamCost, setTeamCost }) {
             </div>
             <table className="table-auto border border-gray-300 w-full">
                 <thead>
-                    <tr>
+                    <tr className="bg-gray-600">
                         <th className="border border-gray-300 px-4 py-2 text-white font-bold">Player Name</th>
                         <th className="border border-gray-300 px-4 py-2 text-white font-bold">Player id</th>
                         <th className="border border-gray-300 px-4 py-2 text-white font-bold">Cost</th>
