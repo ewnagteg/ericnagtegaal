@@ -4,19 +4,26 @@ import React from "react";
 import { Line } from "react-chartjs-2";
 Chart.register(...registerables);
 
-export default function LineChart({ chartData }) {
+export default function LineChart({ chartData, options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: { position: "top" },
+        title: {
+            display: true,
+            text: "Line Chart"
+        }
+    },
+    scales: {
+        y: { beginAtZero: true }
+    }
+} }) {
     return (
-        <div className="chart-container" style={{
-            width: "100%",
-            backgroundColor: "white",
-        }}>
-            <h2 style={{ textAlign: "center" }}></h2>
             <Line
                 data={chartData}
                 options={{
-
+                    options
                 }}
             />
-        </div>
     );
 };

@@ -57,11 +57,15 @@ export default function VLPlayerStats() {
                     <div className="mt-10 h-full">
                         <div className="m-2 p-12">
                             <h1 className="text-white sm:text-2xl">{playerId} Kills Over Time</h1>
-                            <div className="p-1 mt-0">{chartData ? <LineChart chartData={chartData} /> : <p>Loading...</p>}</div>
+                            <div className="max-h-[400px] w-full p-2 bg-gray-800">
+                                {chartData ? <LineChart chartData={chartData} /> : <p>Loading...</p>}
+                            </div>
                         </div>
                         <div className="m-2 p-12">
                             <h1 className="text-white sm:text-2xl">{playerId} histogram of Kills</h1>
-                            <div className="p-1 mt-0">{histChartData ? <HistogramChart chartData={histChartData} /> : <p>Loading...</p>}</div>
+                            <div className="max-h-[400px] w-full p-2 bg-gray-800">
+                                {histChartData ? <HistogramChart chartData={histChartData} /> : <p>Loading...</p>}
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
 import LineChart from "../LineChart.js";
+import BarChart from "../BarChart.js";
 import VLNavBar from "./VLNavBar.js";
 import { useAuth0 } from "@auth0/auth0-react";
 import { fetchWithAuth } from "../../api/fetchWithAuth";
 
 export default function StatsPage() {
     const [chartData, setChartData] = useState(null);
+    const [predsData, setPredsData] = useState(null);
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
     const [totals, setTotals] = useState([]);
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const data = await fetchWithAuth({ getAccessTokenSilently, url: "/stats"});
+                const data = await fetchWithAuth({ getAccessTokenSilently, url: "/stats" });
 
                 // group kills by user and date
                 const grouped = {};
@@ -61,6 +63,22 @@ export default function StatsPage() {
         }
     }, [getAccessTokenSilently, isAuthenticated]);
 
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const data = await fetchWithAuth({ getAccessTokenSilently, url: "/preds" });
+                data.sort((a, b) => new Date(b.date) - new Date(a.date));
+                const predsChart = JSON.parse(data[0].chart_data);
+                setPredsData(predsChart);
+            } catch (err) {
+                console.error("Failed to fetch stats:", err);
+            }
+        };
+        if (isAuthenticated) {
+            fetchStats();
+        }
+    }, [getAccessTokenSilently, isAuthenticated]);
+
     return (
         <main className="text-gray-400 bg-gray-900 body-font">
             <VLNavBar />
@@ -68,12 +86,12 @@ export default function StatsPage() {
             <section className="relative min-h-screen py-10">
                 <div className="container mx-auto px-5">
                     <div>
-                        <p>
+                        <div>
                             <h2 className="text-white sm:text-3xl mb-3 font-medium title-font">About Standings Stats</h2>
                             This pages shows the standings of players in this Fantasy League. Points are the sum of the kills that each Fantasy League player"s team"s players got in the turnament.
                             <br />
                             <br />
-                        </p>
+                        </div>
                     </div>
                     <table className="table-auto border border-gray-300">
                         <thead>
@@ -92,8 +110,42 @@ export default function StatsPage() {
                         </tbody>
                     </table>
                     <div className="mt-10">
-                        <h1 className="text-white sm:text-3xl">Player points Over Time</h1>
-                        {chartData ? <LineChart chartData={chartData} /> : <p>Loading...</p>}
+                        <div className="max-h-[300px] w-full p-2 bg-gray-800">
+                            {predsData ? <BarChart chartData={predsData} options={{
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { position: 'top' },
+                                    title: {
+                                        display: true,
+                                        text: 'Projected Fantasy Point Distribution'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }} /> : <p>Loading...</p>}
+                        </div>
+                        <div className="max-h-[300px] w-full p-2 bg-gray-800">
+                            {chartData ? <LineChart chartData={chartData} options={{
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { position: 'top' },
+                                    title: {
+                                        display: true,
+                                        text: 'Fantasy Points Standings Over Time'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }} /> : <p>Loading...</p>}
+                        </div>
                     </div>
                 </div>
             </section>

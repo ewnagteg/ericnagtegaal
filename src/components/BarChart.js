@@ -5,18 +5,24 @@ import { Bar } from "react-chartjs-2";
 
 Chart.register(...registerables);
 
-export default function BarChart({ chartData }) {
+export default function BarChart({ chartData, options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: { position: "top" },
+        title: {
+            display: true,
+            text: "Bar Chart"
+        }
+    },
+    scales: {
+        y: { beginAtZero: true }
+    },
+} }) {
     return (
-        <div className="chart-container" style={{
-            width: "100%",
-            backgroundColor: "white",
-        }}>
-            <h2 style={{ textAlign: "center" }}></h2>
             <Bar
                 data={chartData}
-                options={{
-                }}
+                options={options}
             />
-        </div>
     );
 };

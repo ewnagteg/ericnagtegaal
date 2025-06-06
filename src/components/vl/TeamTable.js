@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { fetchWithAuth, fetchWithAuthPost } from "../../api/fetchWithAuth";
-import { LOCK_DATE } from "../../constants.js";
+import { LOCK_DATE, BUDGET } from "../../constants.js";
 
 const LOCKED = Date.now() > LOCK_DATE;
 
@@ -45,7 +45,8 @@ export default function TeamTable({ team, setTeam, teamCost, setTeamCost }) {
                 Total Team Cost: {teamCost}
             </div>
             <div className="text-white sm:text-1 text-1 mb-1 font-medium title-font">
-                Unspent budget: {1100 - teamCost}
+                Unspent budget: {BUDGET - teamCost}
+                <progress value={teamCost} max={BUDGET} className="w-full h-3 rounded bg-gray-700"></progress>
             </div>
             <table className="table-auto border border-gray-300 w-full">
                 <thead>

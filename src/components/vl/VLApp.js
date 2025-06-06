@@ -35,7 +35,7 @@ export default function VLApp() {
             <div className="container mx-auto flex flex-col items-start mt-4">
                 <h2 className="text-white sm:text-3xl text-left">Announcements</h2>
             </div>
-            <div className="container mx-auto flex md:flex-col mt-4 p-4">
+            <div className="container max-h-[500px] mx-auto flex md:flex-col mt-4 p-4 overflow-auto">
                 {news && <div className="container mx-auto flex flex-col">
                     {news
                         .map(article => (
