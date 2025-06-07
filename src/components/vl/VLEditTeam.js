@@ -59,7 +59,7 @@ export default function VLEditTeam() {
             )
             .sort((a, b) => {
                 if (sortAsc === "A-Z" || sortAsc === "Z-A")
-                    return ((a.name < b.name) ? -1 : 1) * (sortAsc === "A-Z" ? 1 : -1);
+                    return ((a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1) * (sortAsc === "A-Z" ? 1 : -1);
                 return (a.cost < b.cost ? -1 : 1) * (sortAsc === "desc" ? 1 : -1);
             });
     }, [players, search, sortAsc]);
