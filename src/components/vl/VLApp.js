@@ -47,7 +47,10 @@ export default function VLApp() {
                 </div>}
             </div>
             <div className="container mx-auto flex md:flex-row mt-4 p-4">
-                <h2 className="text-white sm:text-2xl">Days left until teams locked: {daysleft}</h2>
+                <h2 className="text-white sm:text-2xl">{locked
+                    ? "Teams are locked"
+                    : <span>Days left until teams locked: {daysleft}</span>
+                }</h2>
             </div>
             <div className="container mx-auto flex md:flex-row flex-col items-center p-4">
 
