@@ -102,39 +102,61 @@ export default function VLEditTeam() {
                 <button onClick={() => setSortAsc(sortAsc === "asc" ? "desc" : sortAsc === "desc" ? "asc" : "desc")} className="sm:text-1 m-2 hover:underline hover:text-white">
                     Sort Cost: {sortAsc === 'asc' || sortAsc === 'desc' ? sortAsc : 'asc'}
                 </button>
-                <table className="table-auto border border-gray-300 w-full">
-                    <thead>
-                        <tr className="bg-gray-600">
-                            <th className="border border-gray-300 px-4 py-2 text-white font-bold">Name</th>
-                            <th className="border border-gray-300 px-4 py-2 text-white font-bold">VLR</th>
-                            <th className="border border-gray-300 px-4 py-2 text-white font-bold">id</th>
-                            <th className="border border-gray-300 px-4 py-2 text-white font-bold">Cost</th>
-                            <th className="border border-gray-300 px-4 py-2 text-white font-bold">Team</th>
-                            <th className="border border-gray-300 px-4 py-2 text-white font-bold">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredAndSorted.map((player, index) => (
-                            <tr className={`hover:bg-gray-700  ${index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800'} `} key={player.player_id}>
-                                <td className="border border-gray-300 px-4 py-2">
-                                    <Link
-                                        to={`/vl/player-stats/${player.name}`}
-                                        className="text-indigo-400 hover:underline"
-                                    >
-                                        {player.name}
-                                    </Link>
-                                </td>
-                                <td className="border border-gray-300 px-4 py-2"><a href={`https://vlr.gg/player/${player.player_id}`} className="text-indigo-400 hover:underline">VLR</a></td>
-                                <td className="border border-gray-300 px-4 py-2">{player.player_id}</td>
-                                <td className="border border-gray-300 px-4 py-2">{player.cost}</td>
-                                <td className="border border-gray-300 px-4 py-2">{player.team}</td>
-                                <td className="border border-gray-300 px-4 py-2">
-                                    {!LOCKED && <button className="hover:underline hover:text-white" onClick={() => handleAddPlayer(player)}>Add</button>}
-                                </td>
+                <div className="w-full overflow-x-auto">
+
+                    <table className="table-auto border border-gray-300 w-full hidden sm:table">
+                        <thead>
+                            <tr className="bg-gray-600">
+                                <th className="border border-gray-300 px-4 py-2 text-white font-bold">Name</th>
+                                <th className="border border-gray-300 px-4 py-2 text-white font-bold">VLR</th>
+                                <th className="border border-gray-300 px-4 py-2 text-white font-bold">id</th>
+                                <th className="border border-gray-300 px-4 py-2 text-white font-bold">Cost</th>
+                                <th className="border border-gray-300 px-4 py-2 text-white font-bold">Team</th>
+                                <th className="border border-gray-300 px-4 py-2 text-white font-bold">Action</th>
                             </tr>
+                        </thead>
+                        <tbody>
+                            {filteredAndSorted.map((player, index) => (
+                                <tr className={`hover:bg-gray-700  ${index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800'} `} key={player.player_id}>
+                                    <td className="border border-gray-300 px-4 py-2">
+                                        <Link
+                                            to={`/vl/player-stats/${player.name}`}
+                                            className="text-indigo-400 hover:underline"
+                                        >
+                                            {player.name}
+                                        </Link>
+                                    </td>
+                                    <td className="border border-gray-300 px-4 py-2"><a href={`https://vlr.gg/player/${player.player_id}`} className="text-indigo-400 hover:underline">VLR</a></td>
+                                    <td className="border border-gray-300 px-4 py-2">{player.player_id}</td>
+                                    <td className="border border-gray-300 px-4 py-2">{player.cost}</td>
+                                    <td className="border border-gray-300 px-4 py-2">{player.team}</td>
+                                    <td className="border border-gray-300 px-4 py-2">
+                                        {!LOCKED && <button className="hover:underline hover:text-white" onClick={() => handleAddPlayer(player)}>Add</button>}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+
+                    <div className="sm:hidden space-y-4">
+                        {filteredAndSorted.map((player, index) => (
+                            <div className="bg-gray-800 p-4 rounded shadow">
+                                <div className="font-bold text-white"><Link
+                                    to={`/vl/player-stats/${player.name}`}
+                                    className="text-indigo-400 hover:underline"
+                                >
+                                    {player.name}
+                                </Link></div>
+                                <div className="text-gray-300 text-sm">Player ID: {player.player_id}</div>
+                                <div className="text-gray-300 text-sm">Cost: {player.cost}</div>
+                                <div className="text-gray-300 text-sm">{player.team}</div>
+                                <div className="text-gray-300 text-sm">Add: {!LOCKED && 
+                                    <button className="hover:underline hover:text-white" onClick={() => handleAddPlayer(player)}>Add</button>}
+                                </div>
+                            </div>
                         ))}
-                    </tbody>
-                </table>
+                    </div>
+                </div>
             </section>
         </div>
     </main>)
