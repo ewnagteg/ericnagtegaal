@@ -19,7 +19,7 @@ function useOutsideAlerter(ref, callback = () => { }) {
 export default function Navbar() {
     const [hamburgToggle, setHamburgToggle] = useState(false);
     const wrapperRef = useRef(null);
-    useOutsideAlerter(wrapperRef, () => { setHamburgToggle(!hamburgToggle) });
+    useOutsideAlerter(wrapperRef, () => { setHamburgToggle(false) });
     return (
         <header className="bg-gray-800 md:sticky top-0 z-10">
             <div ref={wrapperRef} className="md:hidden flex justify-around p-2 relative">
