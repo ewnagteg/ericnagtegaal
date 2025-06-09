@@ -123,6 +123,11 @@ export default function StatsPage() {
                                 },
                                 scales: {
                                     y: {
+                                        ticks: {
+                                            callback: function (value) {
+                                                return 100*value + '%';
+                                            }
+                                        },
                                         beginAtZero: true
                                     }
                                 }
@@ -133,7 +138,7 @@ export default function StatsPage() {
                                 responsive: true,
                                 maintainAspectRatio: false,
                                 plugins: {
-                                     legend: { position: 'top' },
+                                    legend: { position: 'top' },
                                     title: {
                                         display: true,
                                         text: 'Fantasy Points Standings Over Time'
