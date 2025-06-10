@@ -70,6 +70,11 @@ export default function VLNavBar() {
                                     </HashLink>
                                 </li>
                                 <li>
+                                    <HashLink to="/team-stats" className="hover:text-blue-600">
+                                        Teams
+                                    </HashLink>
+                                </li>
+                                <li>
                                     <HashLink to="/stats" className="hover:text-blue-600">
                                         Leaderboard
                                     </HashLink>
@@ -97,6 +102,9 @@ export default function VLNavBar() {
                         </HashLink>
                         <HashLink to="/edit-team" className="mr-5 hover:text-white">
                             Edit Team
+                        </HashLink>
+                        <HashLink to="/team-stats" className="mr-5 hover:text-white">
+                            Teams
                         </HashLink>
                         <HashLink to="/stats" className="mr-5 hover:text-white">
                             Leaderboard
