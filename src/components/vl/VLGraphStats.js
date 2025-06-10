@@ -133,7 +133,7 @@ export default function StatsPage() {
                                 }
                             }} /> : <p>Loading...</p>}
                         </div>
-                        <div className="max-h-[400px] w-full p-2 bg-gray-800">
+                        <div className="min-h-[400px] w-full p-2 bg-gray-800">
                             {chartData ? <LineChart chartData={chartData} options={{
                                 responsive: true,
                                 maintainAspectRatio: false,

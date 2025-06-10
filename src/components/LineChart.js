@@ -11,7 +11,7 @@ export default function LineChart({ chartData, options = {
         legend: { position: "top" },
         title: {
             display: true,
-            text: "Line Chart"
+            text: ""
         }
     },
     scales: {
@@ -21,9 +21,9 @@ export default function LineChart({ chartData, options = {
     return (
             <Line
                 data={chartData}
-                options={{
+                options={
                     options
-                }}
+                }
             />
     );
 };

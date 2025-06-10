@@ -12,7 +12,7 @@ export default function BarChart({ chartData, options = {
         legend: { position: "top" },
         title: {
             display: true,
-            text: "Bar Chart"
+            text: ""
         }
     },
     scales: {
