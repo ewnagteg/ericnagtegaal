@@ -21,13 +21,21 @@ export default function VLPlayerStats() {
 
                 // x axis labels, remove "Champions Tour 2025: "
                 const labels = rows.map(row =>
-                    `${row.Tournament.substring(21)}, ${row.Stage}, ${row.Match_Type}`
+                    row.date
                 );
 
                 const datasets = statKeys.map((statKey, i) => {
                     return {
                         label: statKey,
-                        data: rows.map(row => row[statKey] ?? 0),
+                        data: rows.map(row =>
+                        ({
+                            x: row.date,
+                            y: row[statKey] ?? 0,
+                            meta: {
+                                label: `${row.Tournament.substring(21)}, ${row.Stage}, ${row.Match_Type}`
+                            }
+                        })
+                        ),
                         borderColor: `hsl(${(i * 120) % 360}, 70%, 50%)`, // gives 3 distinct colors
                         tension: 0.2,
                         fill: false,
@@ -57,13 +65,37 @@ export default function VLPlayerStats() {
                     <div className="mt-10 h-full">
                         <div className="m-2 p-12">
                             <h1 className="text-white sm:text-2xl">{playerId} Kills Over Time</h1>
-                            <div className="max-h-[400px] w-full p-2 bg-gray-800">
-                                {chartData ? <LineChart chartData={chartData} /> : <p>Loading...</p>}
+                            <div className="min-h-[500px] w-full p-2 bg-gray-800">
+                                {chartData ? <LineChart chartData={chartData} options={{
+
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    },
+                                    plugins: {
+                                        legend: { position: 'top' },
+                                        title: {
+                                            display: true,
+                                            text: `${playerId} stats`
+                                        },
+                                        tooltip: {
+                                            callbacks: {
+                                                title: function (context) {
+                                                    const meta = context[0].raw.meta;
+                                                    return meta?.label || 'Unknown match';
+                                                }
+                                            }
+                                        }
+                                    }
+                                }} /> : <p>Loading...</p>}
                             </div>
                         </div>
                         <div className="m-2 p-12">
                             <h1 className="text-white sm:text-2xl">{playerId} histogram of Kills</h1>
-                            <div className="max-h-[400px] w-full p-2 bg-gray-800">
+                            <div className="min-h-[500px] w-full p-2 bg-gray-800">
                                 {histChartData ? <HistogramChart chartData={histChartData} /> : <p>Loading...</p>}
                             </div>
                         </div>
