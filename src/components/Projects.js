@@ -22,11 +22,21 @@ export default function Projects() {
                     <div className="p-2 sm:w-1/2 w-full">
                         <div className="bg-gray-800 rounded flex flex-col p-4 h-full items-start">
                             <h2 className="text-lg font-bold text-white mb-2">Fantasy League</h2>
-                            <p className="text-white mb-2">
-                                Built a web application for a fantasy league &#40;for Valorant ESport&#41; focused on the upcoming Masters tournament. Developed secure user authentication, profile editing, and a dynamic dashboard that tracks player stats over time. Designed and queried a relational SQLite database to aggregate performance data and visualize trends using Chart.js. Backend powered by Node.js and Express, with a responsive frontend in React.
-                            </p>
-                            <span className="title-font font-medium text-gray-400 text-sm">
-                                Tech Stack: React.js, Node.js, SQLite, Auth0, Chart.js
+                            <img
+                                src="vldemo.gif"
+                                alt="Notepad Demo"
+                                className="rounded mb-4 w-full"
+                            />
+                            <ul className="text-white text-sm space-y-1 mb-4 leading-relaxed list-disc list-inside">
+                                <li>Fantasy web app for Valorant Masters tournament</li>
+                                <li>Secure login & user profiles (Auth0)</li>
+                                <li>Interactive player stats & dashboards (Chart.js)</li>
+                                <li>SQLite backend queried via Node/Express API</li>
+                                <li>Fully responsive React frontend</li>
+                            </ul>
+
+                            <span className="text-gray-400 text-xs mb-3">
+                                Tech: React, Node.js, SQLite, Chart.js, Auth0
                             </span>
                             <div className="mt-3">
                                 <Link
@@ -40,6 +50,10 @@ export default function Projects() {
                                         });
                                     }}
                                 > View App </Link>
+                                <Link
+                                    to="https://github.com/ewnagteg/ericnagtegaal/tree/main/src/components/vl"
+                                    className="ml-3 text-blue-400 hover:underline"
+                                > github </Link>
                             </div>
                         </div>
                     </div>
@@ -47,18 +61,23 @@ export default function Projects() {
                     <div className="p-2 sm:w-1/2 w-full">
                         <div className="bg-gray-800 rounded flex flex-col p-4 h-full items-start">
                             <h2 className="text-lg font-bold text-white mb-2">Notepad App</h2>
-                            <img 
-                                src="notepaddemo.gif" 
-                                alt="Notepad Demo" 
+                            <img
+                                src="notepaddemo.gif"
+                                alt="Notepad Demo"
                                 className="rounded mb-4 w-full"
                             />
-                            <p className="text-white mb-2">
-                            Developed a web application for managing notes with features like 2D positioning, search, and create/update/delete functionality. Includes advanced clustering capabilities using TF-IDF and K-means algorithms, combined with a particle simulation to visually distribute notes into clusters.
-                            </p>
-                            <span className="title-font font-medium text-gray-400 text-sm">
-                                Tech Stack: React.js, Node.js, SQLite, Auth0, Chart.js, React Flow
+                            <ul className="text-white text-sm space-y-1 mb-4 leading-relaxed list-disc list-inside">
+                                <li>Drag-and-drop notepad with 2D layout</li>
+                                <li>Full CRUD, search, and persistence (SQLite)</li>
+                                <li>TF-IDF + K-means clustering of notes</li>
+                                <li>Real-time particle simulation for cluster layout</li>
+                                <li>Secured with Auth0</li>
+                            </ul>
+
+                            <span className="text-gray-400 text-xs mb-3">
+                                Tech: React, Node.js, SQLite, Auth0, React Flow
                             </span>
-                            <div className="mt-3">
+                            <div className="mt-3 flex flex-row">
                                 <Link
                                     to="/notepad"
                                     className="text-blue-400 hover:underline"
@@ -70,6 +89,10 @@ export default function Projects() {
                                         });
                                     }}
                                 > View App </Link>
+                                <Link
+                                    to="https://github.com/ewnagteg/ericnagtegaal/tree/main/src/components/notepad"
+                                    className="ml-3 text-blue-400 hover:underline"
+                                > github </Link>
                             </div>
                         </div>
                     </div>
@@ -77,12 +100,22 @@ export default function Projects() {
                     <div className="p-2 sm:w-1/2 w-full">
                         <div className="bg-gray-800 rounded flex flex-col p-4 h-full items-start">
                             <h2 className="text-lg font-bold text-white mb-2">Gift Recommendation App</h2>
-                            <p className="text-white mb-2">
-                                Designed and built an intelligent system that recommends personalized gifts based on users" social media activity. Developed backend in Python and used Selenium to scrape and group Pinterest data. Applied Cosine Similarity to match gift ideas with user preferences. Contributed to a responsive React.js frontend.
-                            </p>
-                            <span className="title-font font-medium text-gray-400 text-sm">
-                                Tech Stack: Python, Selenium, Cosine Similarity, React.js
+                            <ul className="text-white text-sm space-y-1 mb-4 leading-relaxed list-disc list-inside">
+                                <li>Personalized gift suggestions from social media patterns</li>
+                                <li>Scraped and categorized Pinterest data with Selenium</li>
+                                <li>Used Cosine Similarity to match gifts to user interests</li>
+                                <li>Built backend in Python with a responsive React UI</li>
+                            </ul>
+
+                            <span className="text-gray-400 text-xs">
+                                Tech: Python, Selenium, Cosine Similarity, React.js
                             </span>
+                            <div className="mt-3 flex flex-row">
+                                <Link
+                                    to="https://github.com/vatsalbora/GiftGuru"
+                                    className="ml-3 text-blue-400 hover:underline"
+                                > github </Link>
+                            </div>
                         </div>
                     </div>
 
@@ -90,48 +123,17 @@ export default function Projects() {
                     <div className="p-2 sm:w-1/2 w-full">
                         <div className="bg-gray-800 rounded flex flex-col p-4 h-full items-start">
                             <h2 className="text-lg font-bold text-white mb-2">Team Feedback Management Web App</h2>
-                            <p className="text-white mb-2">
-                                Developed a full-stack web application to collect and review team feedback using Ruby on Rails and PostgreSQL. Worked in a SCRUM team, adhering to industry practices like code reviews, pull requests, and Trello-based task tracking. Enforced stability via peer-approved merges. Deployed on Heroku and later adopted by the professor as a course template.
-                            </p>
-                            <span className="title-font font-medium text-gray-400 text-sm">
-                                Tech Stack: Ruby on Rails, PostgreSQL, Heroku Deployment
-                            </span>
-                        </div>
-                    </div>
+                            <ul className="text-white text-sm space-y-1 mb-4 leading-relaxed list-disc list-inside">
+                                <li>Collected and reviewed peer feedback via full-stack app</li>
+                                <li>Built with Ruby on Rails and PostgreSQL</li>
+                                <li>Collaborated in a SCRUM team with code reviews & PRs</li>
+                                <li>Tracked tasks using Trello, deployed on Heroku</li>
+                                <li>Adopted as a course template by the instructor</li>
+                            </ul>
 
-                    {/* D&D Spell Management Web App */}
-                    <div className="p-2 sm:w-1/2 w-full">
-                        <div className="bg-gray-800 rounded flex flex-col p-4 h-full items-start">
-                            <h2 className="text-lg font-bold text-white mb-2">D&D Spell Management Web App</h2>
-                            <p className="text-white mb-2">
-                                Created a database-driven web application to manage Dungeons & Dragons spells. Designed and implemented a normalized PostgreSQL schema with custom filters and search features. Focused on data modeling, query optimization, and building a user-friendly interface.
-                            </p>
-                            <span className="title-font font-medium text-gray-400 text-sm">
-                                Tech Stack: Ruby on Rails, PostgreSQL, Database Design
+                            <span className="text-gray-400 text-xs">
+                                Tech: Ruby on Rails, PostgreSQL, Heroku
                             </span>
-                        </div>
-                    </div>
-
-                    {/* Python Search Engine */}
-                    <div className="p-2 sm:w-1/2 w-full">
-                        <div className="bg-gray-800 rounded flex flex-col p-4 h-full items-start">
-                            <h2 className="text-lg font-bold text-white mb-2">Search Engine Project – MSCI 541</h2>
-                            <p className="text-white mb-2">
-                                Built a lightweight Python-based search engine implementing the BM25 ranking algorithm. Explored core concepts in information retrieval and natural language processing. Designed to return relevant search results with minimal overhead.
-                            </p>
-                            <span className="title-font font-medium text-gray-400 text-sm">
-                                Tech Stack: Python, BM25 Ranking
-                            </span>
-                            <div className="mt-3">
-                                <a
-                                    href="https://github.com/ewnagteg/Python-Search-Engine"
-                                    className="text-blue-400 hover:underline"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    GitHub
-                                </a>
-                            </div>
                         </div>
                     </div>
                 </div>
