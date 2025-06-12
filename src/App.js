@@ -15,6 +15,7 @@ import VLProfile from "./components/vl/VLProfile.js";
 import VLPlayerStats from "./components/vl/VLPlayerStats.js";
 import VLTeamStats from "./components/vl/VLTeamStats.js";
 import NotepadProvider from "./components/notepad/NotepadProvider.js";
+import { MessageProvider } from "./components/MessageProvider.js";
 
 const TRACKING_ID = "G-0GHRD4B2XS";
 ReactGA.initialize(TRACKING_ID);
@@ -26,39 +27,42 @@ function App() {
     }, []);
     return (
         <MathJaxContext>
-            <Routes>
-                <Route path="/" element={<Home />} />
-                {/* resume link goes to this path */}
-                <Route path="/resume" element={<Home />} />
-                <Route path="/projects" element={<Project />} />
-                <Route path="/articles" element={<Articles />} />
-                <Route path="/login" element={<LoginRedirect />} />
-                <Route
-                    path="/notepad"
-                    element={<AuthenticationGuard component={NotepadProvider} />}
-                />
-                <Route
-                    path="/vl"
-                    element={<AuthenticationGuard component={VLApp} />}
-                />
-                <Route path="/vl/player-stats/:playerId" element={<AuthenticationGuard component={VLPlayerStats} />} />
-                <Route
-                    path="/edit-team"
-                    element={<AuthenticationGuard component={VLEditTeam} />}
-                />
-                <Route
-                    path="/stats"
-                    element={<AuthenticationGuard component={VLGraphStats} />}
-                />
-                <Route
-                    path="/team-stats"
-                    element={<AuthenticationGuard component={VLTeamStats} />}
-                />
-                <Route
-                    path="/profile"
-                    element={<AuthenticationGuard component={VLProfile} />}
-                />
-            </Routes>
+            <MessageProvider>
+
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    {/* resume link goes to this path */}
+                    <Route path="/resume" element={<Home />} />
+                    <Route path="/projects" element={<Project />} />
+                    <Route path="/articles" element={<Articles />} />
+                    <Route path="/login" element={<LoginRedirect />} />
+                    <Route
+                        path="/notepad"
+                        element={<AuthenticationGuard component={NotepadProvider} />}
+                    />
+                    <Route
+                        path="/vl"
+                        element={<AuthenticationGuard component={VLApp} />}
+                    />
+                    <Route path="/vl/player-stats/:playerId" element={<AuthenticationGuard component={VLPlayerStats} />} />
+                    <Route
+                        path="/edit-team"
+                        element={<AuthenticationGuard component={VLEditTeam} />}
+                    />
+                    <Route
+                        path="/stats"
+                        element={<AuthenticationGuard component={VLGraphStats} />}
+                    />
+                    <Route
+                        path="/team-stats"
+                        element={<AuthenticationGuard component={VLTeamStats} />}
+                    />
+                    <Route
+                        path="/profile"
+                        element={<AuthenticationGuard component={VLProfile} />}
+                    />
+                </Routes>
+            </MessageProvider>
         </MathJaxContext>
     );
 }

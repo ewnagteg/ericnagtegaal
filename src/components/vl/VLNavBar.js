@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { HashLink } from 'react-router-hash-link';
+import { useLocation } from "react-router-dom";
+import { useMessage } from "../MessageProvider";
 
 function useOutsideAlerter(ref, callback = () => { }) {
     useEffect(() => {
@@ -20,6 +22,25 @@ function useOutsideAlerter(ref, callback = () => { }) {
 export default function VLNavBar() {
     const [hamburgToggle, setHamburgToggle] = useState(false);
     const wrapperRef = useRef(null);
+    const { setMessage } = useMessage();
+    const location = useLocation(); // current route
+    const helpContent = {
+        "/team-stats": "This page breaks down each players team's points by each valorant player they have.",
+        "/stats": `The Leaderboard page displays rankings and points per player. 
+        \"Projected Fantasy Point Distribution\" shows histogram of possible simulated outcomes for turnament. 
+        Eg more bars to right mean more likely that player will win.
+        \"Fantasy Points Standings Over Time\" shows line graph of number of points each player got at each match. 
+        `,
+        "/profile": "This page allows you to change your username that will be displayed",
+    };
+
+    const showHelp = () => {
+        const curPath = location.pathname;
+        const helpMessage = helpContent[curPath] || "";
+        if (helpMessage.length > 0)
+            setMessage(helpMessage); // Display the help message in the modal
+    };
+
     useOutsideAlerter(wrapperRef, () => { setHamburgToggle(false) });
     return (
         <header className="bg-gray-800 md:sticky top-0 z-10">
@@ -84,6 +105,17 @@ export default function VLNavBar() {
                                         Profile
                                     </HashLink>
                                 </li>
+                                {location.pathname in helpContent &&
+                                    <li>
+                                        <button
+                                            onClick={showHelp}
+                                            className="text-gray-400 hover:text-white"
+                                        >
+                                            Help
+                                        </button>
+
+                                    </li>
+                                }
                             </ul>
                         </div>
                     )}
@@ -96,7 +128,7 @@ export default function VLNavBar() {
                             Home
                         </HashLink>
                     </div>
-                    <div className="md:mr-auto md:ml-4 md:py-1 md:pl-4 md:border-l md:border-gray-700 flex flex-wrap items-center text-base justify-center">
+                    <div className="mr-auto ml-4 py-1 pl-4 border-l border-gray-700 flex flex-wrap items-center text-base justify-center">
                         <HashLink to="/vl" className="mr-5 hover:text-white">
                             VL Home
                         </HashLink>
@@ -112,6 +144,14 @@ export default function VLNavBar() {
                         <HashLink to="/profile" className="mr-5 hover:text-white">
                             Profile
                         </HashLink>
+                        {location.pathname in helpContent &&
+                            <button
+                                onClick={showHelp}
+                                className="border-l border-gray-700 pl-4 text-gray-400 hover:text-white ml-4"
+                            >
+                                Help
+                            </button>
+                        }
                     </div>
                     <a
                         href="/#contact"
