@@ -80,7 +80,7 @@ export default function StatsPage() {
     }, [getAccessTokenSilently, isAuthenticated]);
 
     return (
-        <main className="text-gray-400 bg-gray-900 body-font">
+        <main id="top" className="text-gray-400 bg-gray-900 body-font">
             <VLNavBar />
             {/* Table with totals */}
             <section className="relative min-h-screen py-10">
@@ -95,14 +95,14 @@ export default function StatsPage() {
                     </div>
                     <table className="table-auto border border-gray-300">
                         <thead>
-                            <tr>
-                                <th className="border border-gray-300 px-4 py-2">User ID</th>
-                                <th className="border border-gray-300 px-4 py-2">Total Kills</th>
+                            <tr className="bg-gray-600">
+                                <th className="border border-gray-300 px-4 py-2 text-white font-bold">User ID</th>
+                                <th className="border border-gray-300 px-4 py-2 text-white font-bold">Total Kills</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {totals.map(({ user_id, kills }) => (
-                                <tr key={user_id}>
+                            {totals.map(({ user_id, kills }, index) => (
+                                <tr key={user_id} className={`hover:bg-gray-700  ${index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800'} `}>
                                     <td className="border border-gray-300 px-4 py-2">{user_id}</td>
                                     <td className="border border-gray-300 px-4 py-2">{kills}</td>
                                 </tr>
@@ -125,7 +125,7 @@ export default function StatsPage() {
                                     y: {
                                         ticks: {
                                             callback: function (value) {
-                                                return 100*value + '%';
+                                                return 100 * value + '%';
                                             }
                                         },
                                         beginAtZero: true
