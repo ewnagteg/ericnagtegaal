@@ -42,8 +42,9 @@ export default function VLEditTeam() {
             const data = await fetchWithAuthPost({ getAccessTokenSilently, url: "/team/add", body: player });;
             setTeam((prev) => [...prev, player]);
             setTeamCost(team.reduce((acc, arrplayer) => acc + parseInt(arrplayer.cost), 0) + player.cost);
-            setMessage("Player added: " + player.name);
-            console.log("Player added:", data);
+            setMessage(
+                <div><strong>Player added: </strong> {player.name}</div>
+            );
             window.scrollTo({ top: 0, behavior: "smooth" });
         } catch (err) {
             setMessage(`Failed to Add Player: ${player.name} Error: ${err}`);
