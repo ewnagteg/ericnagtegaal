@@ -1,5 +1,14 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { ReactFlow, useNodesState, useReactFlow } from "@xyflow/react";
+import {
+    Background,
+    Controls,
+    ReactFlow,
+    useNodesState,
+    useReactFlow,
+    useEdgesState,
+    addEdge,
+    MarkerType
+} from "@xyflow/react";
 import Notepadnav from "./Notepadnav.js";
 import { fetchWithAuth, fetchWithAuthPost } from "../../api/fetchWithAuth";
 import "@xyflow/react/dist/style.css";
@@ -9,13 +18,23 @@ import { useMessage } from "../MessageProvider.js";
 
 const initialNodes = [
 ];
-const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
+
+const defaultEdgeOptions = {
+    markerEnd: {
+        type: MarkerType.ArrowClosed,
+        color: '#b1b1b7',
+    },
+};
+
 export default function Notepad() {
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
     const [selectedNode, setSelectedNode] = useState(null);
     const [search, setSearch] = useState(false);
     const [searchValue, setSearchValue] = useState("");
     const [nodes, setNodes, onNodesChanges] = useNodesState(initialNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+
     const [searchResults, setSearchResults] = useState([]);
     const [fuse, setFuse] = useState(null);
     const { setViewport } = useReactFlow();
@@ -60,6 +79,10 @@ export default function Notepad() {
         return () => worker.terminate();
     }, []);
 
+    const onConnect = useCallback((params) => {
+        setEdges((eds) => addEdge(params, eds));
+    }, [setEdges]);
+
     const updatePositions = useCallback(() => {
         // This function gets called when the user clicks the update graph button
         // it should check state of worker and send nodes to it if not busy
@@ -101,7 +124,7 @@ export default function Notepad() {
                 notes: node.data.notes,
                 position: node.position,
             })),
-            edges: initialEdges,
+            edges: edges,
         };
         fetchWithAuthPost({ getAccessTokenSilently, url: "/notes", body: data });
     });
@@ -135,6 +158,11 @@ export default function Notepad() {
                     position: { x: note.position.x, y: note.position.y },
                     data: { label: note.label, notes: note.notes },
                 })));
+                setEdges(JSON.parse(data[0].edges).map((edge) => ({
+                    id: edge.id,
+                    source: edge.source,
+                    target: edge.target,
+                })));
             })();
         }
     }, [getAccessTokenSilently, isAuthenticated]);
@@ -159,10 +187,15 @@ export default function Notepad() {
         <div style={{ width: "100vw", height: "100vh" }}>
             {/* react flow component - displays actual nodes */}
             <ReactFlow nodes={nodes}
-                edges={initialEdges}
+                edges={edges}
                 onNodeClick={onNodeClick}
                 onNodesChange={onNodesChanges}
+                onEdgesChange={onEdgesChange}
+                defaultEdgeOptions={defaultEdgeOptions}
+                onConnect={onConnect}
                 fitView />
+            <Background />
+            <Controls />
             {/* allows config of k means */}
             {configMenue && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex justify-center items-center z-50"><div className="bg-gray-900 p-4 rounded shadow-lg max-w-xl w-full max-h-xl">
                 <h2 className="text-xl font-bold mb-2">Update Nodes</h2>
@@ -286,7 +319,7 @@ export default function Notepad() {
             </div></div>}
             {/* edit node */}
             {selectedNode && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex justify-center items-center z-50">
-                <div className="bg-gray-900 p-4 rounded shadow-lg max-w-xl w-full max-h-xl">
+                <div className="flex flex-col bg-gray-900 p-4 rounded shadow-lg max-h-xl">
                     <h2 className="text-xl font-bold mb-2">Edit Node:</h2>
                     <input
                         type="text"
@@ -300,7 +333,7 @@ export default function Notepad() {
                         }}
                     />
                     <textarea
-                        className="w-full bg-gray-800 h-80 border p-3"
+                        className="w-full md:min-w-[60rem] bg-gray-800 h-80 border p-3 resize"
                         defaultValue={selectedNode.data.notes || ""}
                         onChange={(e) => {
                             setSelectedNode({
