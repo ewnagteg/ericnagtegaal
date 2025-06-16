@@ -304,6 +304,9 @@ function positionNodes(matrix, centroids, clusterMap, maxIterations = 100, lambd
         nodePositions[i].x = clusterPositions[cluster].x;
         nodePositions[i].y = clusterPositions[cluster].y;
     }
+    // this is sort of a hack to make nodes in cluster space out more
+    // experimentally it works ok
+    lambda *= 5;
     let nodeforces = new Array(matrix.length).fill(null).map(() => ({ x: 0, y: 0 }));
     for (let i = 0; i < maxIterations; i++) {
         for (let j = 0; j < nodePositions.length; j++) {
@@ -373,7 +376,8 @@ onmessage = async (e) => {
         }
         const N = e.data.data.length;
         const k = e.data.config.k || 2; // default to 2 clusters if not specified
-        const lambda = e.data.config.lambda || 15;
+        const steps = e.data.config.steps || 10;
+        const lambda = e.data.config.lambda || 0.2;
         if (N < k) {
             postMessage({ type: 'error', message: 'k must be less than the number of data points' });
             return;
@@ -431,7 +435,7 @@ onmessage = async (e) => {
             matrix.push(row);
         }
         const cluster = kmeans(matrix, k);
-        const positions = positionNodes(matrix, cluster.centroids, cluster.clusters, 100, lambda);
+        const positions = positionNodes(matrix, cluster.centroids, cluster.clusters, steps, lambda);
         
         postMessage({ type: 'result', data: normalizePositions(positions), clusters: cluster.clusters, centroids: cluster.centroids, nt: nt });
     }

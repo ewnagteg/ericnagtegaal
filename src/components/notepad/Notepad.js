@@ -40,18 +40,22 @@ export default function Notepad() {
     const { setViewport } = useReactFlow();
     const workerRef = useRef(null);
     const [workerstate, setWorkerstate] = useState("loading");
-    const [config, setConfig] = useState({ k: 2, lambda: 15 });
+    const [config, setConfig] = useState({ k: 2, lambda: 0.05, steps: 10 });
     const [configMenue, setConfigMenu] = useState(false);
     const { setMessage } = useMessage();
 
     useEffect(() => {
         // Set the message only when the component is first mounted
-        setMessage(`This is a basic notepad made with react flow. 
+        setMessage(
+            <div>
+                <h2 className="text-lg font-bold">About</h2>
+                <p>This is a basic notepad made with react flow.
                     You can create/edit notes and position them in 2d.
                     Notes will not save until you click save in nav bar.
-                    Update Node graph will use K-means with tf idf to cluster your notes, 
-                    it uses a sort of particle sim to position nodes in 2d space.
-                    `);
+                    Update Node graph will use K-means with tf idf to cluster your notes,
+                    it uses a sort of particle sim to position nodes in 2d space.</p>
+            </div>
+        );
     }, [setMessage]);
 
 
@@ -198,10 +202,10 @@ export default function Notepad() {
             <Controls />
             {/* allows config of k means */}
             {configMenue && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex justify-center items-center z-50"><div className="bg-gray-900 p-4 rounded shadow-lg max-w-xl w-full max-h-xl">
-                <h2 className="text-xl font-bold mb-2">Update Nodes</h2>
+                <h2 className="text-xl font-bold mb-2">Auto Group Nodes Tool</h2>
                 <p>Select number of clusters notes should be in</p>
                 <select
-                    className="w-full bg-gray-800 border p-3 mb-4 text-white rounded"
+                    className="w-full bg-gray-800 border p-3 mb-4 mt-2 text-white rounded"
                     value={config.k} // Set the default value to the current value of `k` in `config`
                     onChange={(e) => {
                         const selectedValue = parseInt(e.target.value, 10);
@@ -217,23 +221,45 @@ export default function Notepad() {
                         </option>
                     ))}
                 </select>
-
+                <p>Select how fast nodes should move apart</p>
                 <input
-                    type="number"
-                    className="w-full bg-gray-800 border p-3 mb-4 text-white rounded"
-                    value={config.lambda} // Set the default value to the current value of `lambda` in `config`
+                    type="range"
+                    className="w-full bg-gray-800 border p-3 mb-1 text-white rounded"
+                    value={config.lambda}
+                    min="0.05"
+                    max="5"
+                    step="0.05"
                     onChange={(e) => {
-                        const selectedValue = parseInt(e.target.value, 10);
+                        const selectedValue = parseFloat(e.target.value);
                         setConfig((prevConfig) => ({
                             ...prevConfig,
                             lambda: selectedValue,
                         }));
                     }}
                 />
+                <p className="text-white mb-6">Current Lambda: {config.lambda.toFixed(1)}</p>
+
+                <p>Select number of steps to run algorithm</p>
+                <input
+                    type="range"
+                    className="w-full bg-gray-800 border p-3 mb-4 text-white rounded"
+                    value={config.steps}
+                    min="1"
+                    max="100"
+                    step="1"
+                    onChange={(e) => {
+                        const selectedValue = parseFloat(e.target.value); 
+                        setConfig((prevConfig) => ({
+                            ...prevConfig,
+                            steps: selectedValue,
+                        }));
+                    }}
+                />
+                <p className="text-white mb-6">Current Steps: {config.steps}</p>
                 <div className="mt-4 flex justify-end">
 
                     <button
-                        className="bg-blue-500 text-white px-3 py-1 ml-4 rounded"
+                        className="text-white bg-green-500 px-3 py-1 ml-4 hover:bg-green-600 transition rounded"
                         onClick={() => {
                             setConfigMenu(false);
                             updatePositions();
@@ -242,7 +268,7 @@ export default function Notepad() {
                         Run
                     </button>
                     <button
-                        className="bg-blue-500 text-white px-3 py-1 ml-4 rounded"
+                        className="text-gray-300 bg-gray-700 px-3 py-1 ml-4 hover:bg-gray-800 transition rounded"
                         onClick={() => {
                             setConfigMenu(false);
                         }}
