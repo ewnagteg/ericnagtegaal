@@ -8,6 +8,7 @@ import { fetchWithAuth } from "../../api/fetchWithAuth";
 export default function StatsPage() {
     const [chartData, setChartData] = useState(null);
     const [predsData, setPredsData] = useState(null);
+    const [probsData, setProbsData] = useState([]);
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
     const [totals, setTotals] = useState([]);
 
@@ -78,6 +79,25 @@ export default function StatsPage() {
             fetchStats();
         }
     }, [getAccessTokenSilently, isAuthenticated]);
+    
+    // data is sort of hacked in, need to refactor anyway
+    useEffect(() => {
+        const fetchProbs = async () => {
+            try {
+                const data = await fetchWithAuth({ getAccessTokenSilently, url: "/probs" });
+                const formatted = Object.entries(data).map(([user_id, prob]) => ({
+                    user_id,
+                    prob
+                  }));
+                setProbsData(formatted);
+            } catch (err) {
+                console.error("Failed to fetch stats:", err);
+            }
+        };
+        if (isAuthenticated) {
+            fetchProbs();
+        }
+    }, [getAccessTokenSilently, isAuthenticated]);
 
     return (
         <main id="top" className="text-gray-400 bg-gray-900 body-font">
@@ -93,6 +113,23 @@ export default function StatsPage() {
                             <br />
                         </div>
                     </div>
+                    {probsData && <table className="table-auto mb-8 border border-gray-300">
+                        <thead>
+                            <tr className="bg-gray-600">
+                                <th className="border border-gray-300 px-4 py-2 text-white font-bold">User ID</th>
+                                <th className="border border-gray-300 px-4 py-2 text-white font-bold">Probability of Winning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {probsData.map(({ user_id, prob }, index) => (
+                                <tr key={user_id} className={`hover:bg-gray-700  ${index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800'} `}>
+                                    <td className="border border-gray-300 px-4 py-2">{user_id}</td>
+                                    <td className="border border-gray-300 px-4 py-2">{`${(100 * prob).toFixed(2)}%`}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    }
                     <table className="table-auto border border-gray-300">
                         <thead>
                             <tr className="bg-gray-600">
