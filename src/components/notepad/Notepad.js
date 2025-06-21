@@ -10,12 +10,15 @@ import {
     MarkerType
 } from "@xyflow/react";
 import Notepadnav from "./Notepadnav.js";
-import { fetchWithAuth, fetchWithAuthPost } from "../../api/fetchWithAuth";
 import "@xyflow/react/dist/style.css";
 import { useAuth0 } from "@auth0/auth0-react";
-import Fuse from "fuse.js";
 import { useMessage } from "../MessageProvider.js";
-
+import SearchModal from "./SearchModal.js";
+import EditNodeModel from "./EditNodeModel.js";
+import ConfigModel from "./ConfigModel.js";
+import useNodeSearch from "./hooks/useNodeSearch.js";
+import useWorkerManager from "./hooks/useWorkerManager.js";
+import useNotesData from "./hooks/useNotesData.js";
 const initialNodes = [
 ];
 
@@ -28,21 +31,31 @@ const defaultEdgeOptions = {
 
 export default function Notepad() {
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+    const { setMessage } = useMessage();
+    const { setViewport } = useReactFlow();    
+
     const [selectedNode, setSelectedNode] = useState(null);
     const [search, setSearch] = useState(false);
-    const [searchValue, setSearchValue] = useState("");
     const [nodes, setNodes, onNodesChanges] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-
-
-    const [searchResults, setSearchResults] = useState([]);
-    const [fuse, setFuse] = useState(null);
-    const { setViewport } = useReactFlow();
-    const workerRef = useRef(null);
-    const [workerstate, setWorkerstate] = useState("loading");
     const [config, setConfig] = useState({ k: 2, lambda: 0.05, steps: 10 });
-    const [configMenue, setConfigMenu] = useState(false);
-    const { setMessage } = useMessage();
+    const [configMenu, setConfigMenu] = useState(false);
+
+    const { searchValue, searchResults, fuse, handleSearch, resetSearch } = useNodeSearch(nodes);
+    const { workerState, updatePositions } = useWorkerManager(setNodes, config);
+    const { saveNotes, loadNotes } = useNotesData(nodes, edges, getAccessTokenSilently, setMessage);
+
+    const handleDelete = (nodeId) => {
+        setNodes((prevNodes) => prevNodes.filter((node) => node.id !== nodeId));
+    };
+
+    const handleApply = (updatedNode) => {
+        setNodes((prevNodes) =>
+            prevNodes.map((node) =>
+                node.id === updatedNode.id ? { ...node, data: updatedNode.data } : node
+            )
+        );
+    };
 
     useEffect(() => {
         // Set the message only when the component is first mounted
@@ -58,52 +71,21 @@ export default function Notepad() {
         );
     }, [setMessage]);
 
-
     useEffect(() => {
-        workerRef.current = new Worker("tfidfworker.js");;
-        const worker = workerRef.current;
-        // currently this worker doesnt load anything so fine to set it to ready
-        setWorkerstate("ready");
-        worker.onmessage = (e) => {
-            if (e.data.type === "result") {
-                console.log("Received result:", e.data);
-                let positions = e.data.data;
-                setWorkerstate("ready");
-                setNodes((prevNodes) =>
-                    prevNodes.map((node, index) => ({
-                        ...node,
-                        position: positions[index], // Update position based on the corresponding index
-                    }))
-                );
-            } else if (e.data.type === "error") {
-                setWorkerstate("error");
-                console.error("Error from worker:", e.data.message);
-            }
-        };
-        return () => worker.terminate();
-    }, []);
+        if (isAuthenticated) {
+            loadNotes(setNodes, setEdges);
+        }
+    }, [isAuthenticated, loadNotes]);
 
     const onConnect = useCallback((params) => {
         setEdges((eds) => addEdge(params, eds));
     }, [setEdges]);
 
-    const updatePositions = useCallback(() => {
-        // This function gets called when the user clicks the update graph button
-        // it should check state of worker and send nodes to it if not busy
-        if (workerstate === "ready") {
-            workerRef.current.postMessage({ type: "process", data: JSON.stringify(nodes), config: config });
-            setWorkerstate("busy");
-        }
-    });
-
-    const updateNodes = useCallback(() => {
-        setConfigMenu(true);
-    });
 
     // sets the selected node, this will display the edit node UI
-    const onNodeClick = (event, node) => {
+    const onNodeClick = useCallback((event, node) => {
         setSelectedNode(node);
-    };
+    }, []);
 
     // this sets the viewport to center on the given x and y coordinates
     // this allows search results to center relevant node
@@ -117,74 +99,39 @@ export default function Notepad() {
         setViewport({ x: -centerX, y: -centerY, zoom });
     }, [setViewport]);
 
-    // saves notes to the server
-    const saveNotes = useCallback(() => {
-        console.log("Notes saved:", nodes);
-        setMessage("Saved Notes");
-        const data = {
-            nodes: nodes.map(node => ({
-                id: node.id,
-                label: node.data.label,
-                notes: node.data.notes,
-                position: node.position,
-            })),
-            edges: edges,
-        };
-        fetchWithAuthPost({ getAccessTokenSilently, url: "/notes", body: data });
-    });
-
     // creates a new note, does not save to server
     // this is just for the UI
     const newNote = useCallback(() => {
         const newNode = {
-            id: `${nodes.length + 1}`,
+            id: `${Date.now()}`,
             position: { x: 0, y: 0 },
             data: { label: `New Note ${nodes.length + 1}`, notes: "" },
         };
         setNodes((nds) => nds.concat(newNode));
         setSelectedNode(newNode);
-    });
-    const searchNotes = () => {
-        // Logic to save search, e.g., send to server or local storage
+    }, [nodes.length]);
+
+    const searchNotes = useCallback(() => {
         setSearch(true);
-    };
+    }, []);
 
-    // fetches users notes from the server
-    useEffect(() => {
-        if (isAuthenticated) {
-            (async () => {
-                const data = await fetchWithAuth({
-                    getAccessTokenSilently,
-                    url: "/notes",
-                });
-                setNodes(JSON.parse(data[0].nodes).map((note) => ({
-                    id: note.id,
-                    position: { x: note.position.x, y: note.position.y },
-                    data: { label: note.label, notes: note.notes },
-                })));
-                setEdges(JSON.parse(data[0].edges).map((edge) => ({
-                    id: edge.id,
-                    source: edge.source,
-                    target: edge.target,
-                })));
-            })();
-        }
-    }, [getAccessTokenSilently, isAuthenticated]);
+    const updateNodes = useCallback(() => {
+        setConfigMenu(true);
+    }, []);
 
-    // this syncs fuse with current state of nodes
-    // maybe this can be done a bit more efficiently
-    // but this works for now
-    useEffect(() => {
-        if (nodes.length > 0) {
-            const newFuse = new Fuse(nodes, {
-                keys: ["data.notes", "data.label"],
-                threshold: 0.4,
-                includeMatches: true
-            });
-            setFuse(newFuse);
+    const handleConfigClose = useCallback(() => {
+        setConfigMenu(false);
+    }, []);
 
-        }
-    }, [nodes]);
+    const handleConfigRun = useCallback(() => {
+        setConfigMenu(false);
+        updatePositions(nodes);
+    }, [updatePositions]);
+
+    const handleSearchClose = useCallback(() => {
+        setSearch(false);
+        resetSearch();
+    }, [resetSearch]);
 
     return (<main className="text-gray-400 bg-gray-900 body-font">
         <Notepadnav newNote={newNote} saveNotes={saveNotes} searchNotes={searchNotes} updateNodes={updateNodes} />
@@ -201,211 +148,34 @@ export default function Notepad() {
             <Background />
             <Controls />
             {/* allows config of k means */}
-            {configMenue && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex justify-center items-center z-50"><div className="bg-gray-900 p-4 rounded shadow-lg max-w-xl w-full max-h-xl">
-                <h2 className="text-xl font-bold mb-2">Auto Group Nodes Tool</h2>
-                <p>Select number of clusters notes should be in</p>
-                <select
-                    className="w-full bg-gray-800 border p-3 mb-4 mt-2 text-white rounded"
-                    value={config.k} // Set the default value to the current value of `k` in `config`
-                    onChange={(e) => {
-                        const selectedValue = parseInt(e.target.value, 10);
-                        setConfig((prevConfig) => ({
-                            ...prevConfig,
-                            k: selectedValue,
-                        }));
-                    }}
-                >
-                    {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
-                        <option key={num} value={num}>
-                            {num}
-                        </option>
-                    ))}
-                </select>
-                <p>Select how fast nodes should move apart</p>
-                <input
-                    type="range"
-                    className="w-full bg-gray-800 border p-3 mb-1 text-white rounded"
-                    value={config.lambda}
-                    min="0.05"
-                    max="5"
-                    step="0.05"
-                    onChange={(e) => {
-                        const selectedValue = parseFloat(e.target.value);
-                        setConfig((prevConfig) => ({
-                            ...prevConfig,
-                            lambda: selectedValue,
-                        }));
-                    }}
+            {configMenu && (
+                <ConfigModel
+                    config={config}
+                    setConfig={setConfig}
+                    onClose={handleConfigClose}
+                    onRun={handleConfigRun}
+                    workerState={workerState}
                 />
-                <p className="text-white mb-6">Current Lambda: {config.lambda.toFixed(1)}</p>
-
-                <p>Select number of steps to run algorithm</p>
-                <input
-                    type="range"
-                    className="w-full bg-gray-800 border p-3 mb-4 text-white rounded"
-                    value={config.steps}
-                    min="1"
-                    max="100"
-                    step="1"
-                    onChange={(e) => {
-                        const selectedValue = parseFloat(e.target.value); 
-                        setConfig((prevConfig) => ({
-                            ...prevConfig,
-                            steps: selectedValue,
-                        }));
-                    }}
-                />
-                <p className="text-white mb-6">Current Steps: {config.steps}</p>
-                <div className="mt-4 flex justify-end">
-
-                    <button
-                        className="text-white bg-green-500 px-3 py-1 ml-4 hover:bg-green-600 transition rounded"
-                        onClick={() => {
-                            setConfigMenu(false);
-                            updatePositions();
-                        }}
-                    >
-                        Run
-                    </button>
-                    <button
-                        className="text-gray-300 bg-gray-700 px-3 py-1 ml-4 hover:bg-gray-800 transition rounded"
-                        onClick={() => {
-                            setConfigMenu(false);
-                        }}
-                    >
-                        Close
-                    </button>
-                </div>
-            </div></div>}
+            )}
             {/* search ui */}
-            {(search && !selectedNode) && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex justify-center items-center z-50"><div className="bg-gray-900 p-4 rounded shadow-lg max-w-xl w-full max-h-xl">
-                <h2 className="text-xl font-bold mb-2">Search Nodes:</h2>
-                <input
-                    type="text"
-                    className="w-full bg-gray-800 border p-3 mb-4 text-white rounded"
-                    defaultValue=""
-                    onChange={(e) => {
-                        // handle change
-                        console.log(fuse._docs);
-                        console.log(fuse.search(e.target.value));
-                        setSearchResults(fuse.search(e.target.value, { limit: 3 }));
-                        setSearchValue(e.target.value);
-                    }}
+            {search && !selectedNode && (
+                <SearchModal
+                    searchValue={searchValue}
+                    searchResults={searchResults}
+                    onSearch={handleSearch}
+                    onResultClick={onBlockOpen}
+                    onClose={handleSearchClose}
+                    nodes={nodes}
                 />
-                {searchResults.length > 0 &&
-                    <ul className="bg-gray-800 p-3 rounded">
-                        {searchResults.map((result, index) => (
-                            <li key={index} className="text-white mb-2 cursor-pointer hover:bg-gray-700 p-2 rounded"
-                                onClick={() => {
-                                    const node = result.item;
-                                    onBlockOpen(node.position.x, node.position.y);
-                                    setSearch(false);
-                                    setSearchValue("");
-                                    setSearchResults([]);
-                                }}>
-
-                                {result.item.data.label || "No Label"}: {result.matches.slice(0, 4).map((match, matchIndex) => (
-                                    <span key={matchIndex}>{match.indices.slice(0, 4).map(([start, end]) =>
-                                        result.item.data.notes.substring(start, end + 1)
-                                    ).join(", ")} </span>))}
-                            </li>
-                        ))}
-                    </ul>
-                }
-                <div className="mt-4 flex justify-end">
-                    <button
-                        className="bg-blue-500 text-white px-3 py-1 rounded"
-                        onClick={() => {
-                            const match = nodes.find((node) => {
-                                return node.data.notes?.toLowerCase().includes(searchValue.toLowerCase());
-                            });
-
-                            if (match) {
-                                onBlockOpen(match.position.x, match.position.y);
-                            } else {
-                                console.log("No match found");
-                            }
-
-                            setSearch(false);
-                            setSearchValue("");
-                        }}
-                    >
-                        Search
-                    </button>
-                    <button
-                        className="bg-blue-500 text-white px-3 py-1 ml-4 rounded"
-                        onClick={() => {
-
-                            setSearch(false);
-                        }}
-                    >
-                        Close
-                    </button>
-                </div>
-            </div></div>}
-            {/* edit node */}
-            {selectedNode && <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex justify-center items-center z-50">
-                <div className="flex flex-col bg-gray-900 p-4 rounded shadow-lg max-h-xl">
-                    <h2 className="text-xl font-bold mb-2">Edit Node:</h2>
-                    <input
-                        type="text"
-                        className="w-full bg-gray-800 border p-3 mb-4 text-white rounded"
-                        defaultValue={selectedNode.data.label || ""}
-                        onChange={(e) => {
-                            setSelectedNode({
-                                ...selectedNode,
-                                data: { ...selectedNode.data, label: e.target.value },
-                            });
-                        }}
-                    />
-                    <textarea
-                        className="w-full md:min-w-[60rem] bg-gray-800 h-80 border p-3 resize"
-                        defaultValue={selectedNode.data.notes || ""}
-                        onChange={(e) => {
-                            setSelectedNode({
-                                ...selectedNode,
-                                data: { ...selectedNode.data, notes: e.target.value },
-                            })
-                        }
-                        }
-                    />
-                    <div className="mt-4 flex justify-end">
-                        <button
-                            className="text-gray-300 bg-gray-700 px-3 py-1 ml-4 hover:bg-gray-800 transition rounded"
-                            onClick={() => {
-                                setSelectedNode(null);
-                            }}
-                        >
-                            Close
-                        </button>
-                        <button
-                            className="text-white bg-red-500 px-3 py-1 ml-4 hover:bg-red-600 transition rounded"
-                            onClick={() => {
-                                setNodes((prevNodes) =>
-                                    prevNodes.filter((node) => node.id !== selectedNode.id)
-                                );
-                                setSelectedNode(null);
-                            }}
-                        >
-                            Delete
-                        </button>
-                        <button
-                            className="text-white bg-green-500 px-3 py-1 ml-4 hover:bg-green-600 transition rounded"
-                            onClick={() => {
-                                // Save logic here, eg, update nodes
-                                setNodes((prevNodes) =>
-                                    prevNodes.map((node) =>
-                                        node.id === selectedNode.id ? { ...node, data: selectedNode.data } : node
-                                    )
-                                );
-                                setSelectedNode(null);
-                            }}
-                        >
-                            Apply
-                        </button>
-                    </div>
-                </div>
-            </div>}
+            )}
+            {selectedNode && (
+                <EditNodeModel
+                    selectedNode={selectedNode}
+                    setSelectedNode={setSelectedNode}
+                    onDelete={handleDelete}
+                    onApply={handleApply}
+                />
+            )}
         </div>
     </main>
     );
