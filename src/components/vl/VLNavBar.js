@@ -25,32 +25,32 @@ export default function VLNavBar() {
     const { setMessage } = useMessage();
     const location = useLocation(); // current route
     const helpContent = {
-  "/team-stats": 
-    <div>
-      This page breaks down each player's team's points by each Valorant player they have.
-    </div>
-  ,
-  "/stats": 
-    <div>
-      <p className="mb-2">
-        The Leaderboard page displays rankings and points per player.
-      </p>
-      <p className="mb-2">
-        <strong>Projected Fantasy Point Distribution</strong> shows a histogram of possible simulated outcomes for the tournament.
-        <br />
-        For example, more bars to the right mean it’s more likely that player will win.
-      </p>
-      <p>
-        <strong>Fantasy Points Standings Over Time</strong> shows a line graph of the number of points each player got at each match.
-      </p>
-    </div>
-  ,
-  "/profile": 
-    <div>
-      This page allows you to change your username that will be displayed.
-    </div>
-  
-};
+        "/team-stats":
+            <div>
+                This page breaks down each player's team's points by each Valorant player they have.
+            </div>
+        ,
+        "/stats":
+            <div>
+                <p className="mb-2">
+                    The Leaderboard page displays rankings and points per player.
+                </p>
+                <p className="mb-2">
+                    <strong>Projected Fantasy Point Distribution</strong> shows a histogram of possible simulated outcomes for the tournament.
+                    <br />
+                    For example, more bars to the right mean it’s more likely that player will win.
+                </p>
+                <p>
+                    <strong>Fantasy Points Standings Over Time</strong> shows a line graph of the number of points each player got at each match.
+                </p>
+            </div>
+        ,
+        "/profile":
+            <div>
+                This page allows you to change your username that will be displayed.
+            </div>
+
+    };
 
     const showHelp = () => {
         const curPath = location.pathname;

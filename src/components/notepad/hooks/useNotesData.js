@@ -30,12 +30,12 @@ export default function useNotesData(nodes, edges, getAccessTokenSilently, setMe
                 getAccessTokenSilently,
                 url: "/notes",
             });
-            setNodes(JSON.parse(data[0].nodes).map((note) => ({
+            setNodes(JSON.parse(data.nodes).map((note) => ({
                 id: note.id,
                 position: { x: note.position.x, y: note.position.y },
                 data: { label: note.label, notes: note.notes },
             })));
-            setEdges(JSON.parse(data[0].edges).map((edge) => ({
+            setEdges(JSON.parse(data.edges).map((edge) => ({
                 id: edge.id,
                 source: edge.source,
                 target: edge.target,
