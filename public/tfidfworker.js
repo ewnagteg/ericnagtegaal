@@ -281,8 +281,8 @@ function positionNodes(matrix, centroids, clusterMap, maxIterations = 100, lambd
                 // direction vec  centroid j - k
                 let directionX = clusterPositions[k].x - clusterPositions[j].x;
                 let directionY = clusterPositions[k].y - clusterPositions[j].y;
-                directionX = directionX || Math.random() + 0.1; 
-                directionY = directionY || Math.random() + 0.1; 
+                directionX = directionX || Math.random() + 0.1;
+                directionY = directionY || Math.random() + 0.1;
                 // norm
                 const directionLength = Math.sqrt(directionX ** 2 + directionY ** 2);
                 const normalizedDirectionX = directionX / directionLength;
@@ -322,8 +322,43 @@ function positionNodes(matrix, centroids, clusterMap, maxIterations = 100, lambd
 
                 let directionX = nodePositions[k].x - nodePositions[j].x;
                 let directionY = nodePositions[k].y - nodePositions[j].y;
-                directionX = directionX || Math.random() + 0.1; 
-                directionY = directionY || Math.random() + 0.1; 
+                directionX = directionX || Math.random() + 0.1;
+                directionY = directionY || Math.random() + 0.1;
+
+                const directionLength = Math.sqrt(directionX ** 2 + directionY ** 2);
+                const normalizedDirectionX = directionX / directionLength;
+                const normalizedDirectionY = directionY / directionLength;
+                nodeforces[j].x += normalizedDirectionX * forceMagnitude;
+                nodeforces[j].y += normalizedDirectionY * forceMagnitude;
+            }
+        }
+        for (let j = 0; j < nodePositions.length; j++) {
+            nodePositions[j].x += lambda * nodeforces[j].x;
+            nodePositions[j].y += lambda * nodeforces[j].y;
+        }
+    }
+    return nodePositions;
+}
+
+function nudgeNodes(matrix, clusterMap, maxIterations = 10, lambda = 0.1) {
+    const nodePositions = matrix;
+    let nodeforces = new Array(matrix.length).fill(null).map(() => ({ x: 0, y: 0 }));
+    for (let i = 0; i < maxIterations; i++) {
+        for (let j = 0; j < nodePositions.length; j++) {
+            nodeforces[j].x = 0;
+            nodeforces[j].y = 0;
+            for (let k = 0; k < nodePositions.length; k++) {
+                // if (clusterMap[j] !== clusterMap[k]) continue;
+
+                let dist = euclideanDistance(nodePositions[j], nodePositions[k]);
+                if (dist === 0) dist = Math.random() + 0.1; // avoid division by zero
+
+                const forceMagnitude = 6 * (1 / dist) * (clusterMap[j] !== clusterMap[k] ? 0.5 : 1);;
+
+                let directionX = nodePositions[k].x - nodePositions[j].x;
+                let directionY = nodePositions[k].y - nodePositions[j].y;
+                directionX = directionX || Math.random() + 0.1;
+                directionY = directionY || Math.random() + 0.1;
 
                 const directionLength = Math.sqrt(directionX ** 2 + directionY ** 2);
                 const normalizedDirectionX = directionX / directionLength;
@@ -374,6 +409,7 @@ onmessage = async (e) => {
             postMessage({ type: 'error', message: 'Invalid JSON data' });
             return;
         }
+        const config = e.data.config || {};
         const N = e.data.data.length;
         const k = e.data.config.k || 2; // default to 2 clusters if not specified
         const steps = e.data.config.steps || 10;
@@ -382,61 +418,70 @@ onmessage = async (e) => {
             postMessage({ type: 'error', message: 'k must be less than the number of data points' });
             return;
         }
-        const nt = {};
-        const idf = {};
-        for (let i = 0; i < N; i++) {
-            const node = e.data.data[i];
-            const tf = {};
-            if (!node.data.notes && !node.data.label) {
-                continue; // skip nodes without text
+        if (!config.useEmbeddings || !e.data.embeddings || e.data.embeddings.length === 0) {
+            const nt = {};
+            const idf = {};
+            for (let i = 0; i < N; i++) {
+                const node = e.data.data[i];
+                const tf = {};
+                if (!node.data.notes && !node.data.label) {
+                    continue; // skip nodes without text
+                }
+                let text = node.data.notes + ' ' + node.data.label;
+                let words = text.split(/\W+/).filter(word => word.length > 0);
+                // remove stop words and apply porter stemmer
+                const stopWords = new Set(['the', 'and', 'is', 'in', 'at', 'of', 'on', 'a', 'to']);
+                const stemmedWords = words
+                    .map(word => stemmer(word.toLowerCase()))
+                    .filter(word => !stopWords.has(word));
+                // const stemmedWords = words.map(word => stemmer(word.toLowerCase()));
+                for (const word of stemmedWords) {
+                    if (tf[word]) {
+                        tf[word]++;
+                    } else {
+                        tf[word] = 1;
+                    }
+                }
+                for (const word in tf) {
+                    tf[word] /= words.length;
+                }
+                for (const word in tf) {
+                    if (nt[word]) {
+                        nt[word] += 1;
+                    } else {
+                        nt[word] = 1;
+                    }
+                }
+                idf[node.id] = tf;
             }
-            let text = node.data.notes + ' ' + node.data.label;
-            let words = text.split(/\W+/).filter(word => word.length > 0);
-            // remove stop words and apply porter stemmer
-            const stopWords = new Set(['the', 'and', 'is', 'in', 'at', 'of', 'on', 'a', 'to']);
-            const stemmedWords = words
-                .map(word => stemmer(word.toLowerCase()))
-                .filter(word => !stopWords.has(word));
-            // const stemmedWords = words.map(word => stemmer(word.toLowerCase()));
-            for (const word of stemmedWords) {
-                if (tf[word]) {
-                    tf[word]++;
-                } else {
-                    tf[word] = 1;
+            // calculate tf * idf
+            for (const id in idf) {
+                const tf = idf[id];
+                for (const word in tf) {
+                    tf[word] *= (Math.log(N / (nt[word] + 1)) + 1); // Calculate IDF
                 }
             }
-            for (const word in tf) {
-                tf[word] /= words.length;
-            }
-            for (const word in tf) {
-                if (nt[word]) {
-                    nt[word] += 1;
-                } else {
-                    nt[word] = 1;
+            const matrix = [];
+            for (let i = 0; i < N; i++) {
+                const node = e.data.data[i];
+                const tf = idf[node.id];
+                const row = [];
+                for (const word in nt) {
+                    row.push(tf[word] || 0); // fill with 0 if word not in tf
                 }
+                matrix.push(row);
             }
-            idf[node.id] = tf;
+            const cluster = kmeans(matrix, k);
+            let positions = positionNodes(matrix, cluster.centroids, cluster.clusters, steps, lambda);
+            positions = nudgeNodes(positions, cluster.clusters, steps, lambda);
+            postMessage({ type: 'result', data: normalizePositions(positions), clusters: cluster.clusters, centroids: cluster.centroids, nt: nt });
+
+        } else {
+            const matrix = Object.values(e.data.embeddings);
+            const cluster = kmeans(matrix, k);
+            let positions = positionNodes(matrix, cluster.centroids, cluster.clusters, steps, lambda);
+            positions = nudgeNodes(positions, cluster.clusters, steps, lambda);
+            postMessage({ type: 'result', data: normalizePositions(positions), clusters: cluster.clusters, centroids: cluster.centroids });
         }
-        // calculate tf * idf
-        for (const id in idf) {
-            const tf = idf[id];
-            for (const word in tf) {
-                tf[word] *= (Math.log(N / (nt[word] + 1)) + 1); // Calculate IDF
-            }
-        }
-        const matrix = [];
-        for (let i = 0; i < N; i++) {
-            const node = e.data.data[i];
-            const tf = idf[node.id];
-            const row = [];
-            for (const word in nt) {
-                row.push(tf[word] || 0); // fill with 0 if word not in tf
-            }
-            matrix.push(row);
-        }
-        const cluster = kmeans(matrix, k);
-        const positions = positionNodes(matrix, cluster.centroids, cluster.clusters, steps, lambda);
-        
-        postMessage({ type: 'result', data: normalizePositions(positions), clusters: cluster.clusters, centroids: cluster.centroids, nt: nt });
     }
 }

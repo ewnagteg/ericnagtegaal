@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-export default function useWorkerManager(setNodes, config) {
+export default function useWorkerManager(setNodes, config, embeddings) {
     const [workerState, setWorkerState] = useState("loading");
     const workerRef = useRef(null);
 
@@ -30,11 +30,20 @@ export default function useWorkerManager(setNodes, config) {
 
     const updatePositions = useCallback((nodes) => {
         if (workerRef.current && workerState === "ready") {
-            workerRef.current.postMessage({ 
-                type: "process", 
-                data: JSON.stringify(nodes), 
-                config: config 
-            });
+            if (config.useEmbeddings && embeddings[0] && embeddings[0].length > 0) {
+                workerRef.current.postMessage({ 
+                    type: "process", 
+                    data: JSON.stringify(nodes), 
+                    embeddings: embeddings,
+                    config: config 
+                });
+            } else {
+                workerRef.current.postMessage({ 
+                    type: "process", 
+                    data: JSON.stringify(nodes), 
+                    config: config 
+                });
+            }
             setWorkerState("busy");
         }
     }, [workerState, config]);

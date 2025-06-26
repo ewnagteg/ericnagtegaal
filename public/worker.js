@@ -32,47 +32,72 @@ class PipelineSingleton {
 }
 
 
+
 // Enable CDN mode
 self.onmessage = async function (e) {
     const { task, model, input } = e.data;
+    const data = e.data;
+    const nodes = JSON.parse(data.data || "[]");
 
-    console.log("Task:", task);
-    console.log("Model:", model);
-    console.log("Input:", input);
-
-    try {
-        const extractor  = await PipelineSingleton.getInstance((x) => {
-            self.postMessage(x);
-        });
-
-        const text = e.data.input || "";
-        console.log("Processing text length:", text.length, "characters");
-
-        // Get sentence embedding - this handles any length text!
-        const output = await extractor(text, { pooling: 'mean', normalize: true });
-
-        console.log("Output shape:", output.dims);
-        console.log("Embedding dimensions:", output.data.length);
-        console.log("First 10 values:", output.data.slice(0, 10));
-
-        // Convert to regular array for easier use
-        const embedding = Array.from(output.data);
-
-        self.postMessage({
-            status: "complete",
-            output: {
-                embedding: embedding,
-                dimensions: embedding.length,
-                inputLength: text.length,
-                model: "all-MiniLM-L6-v2"
-            }
-        });
-
-    } catch (error) {
-        console.error("Error in classification:", error);
-        self.postMessage({
-            status: "error",
-            error: error instanceof Error ? error.message : String(error),
-        });
+    if (task === 'load') {
+        // Handle the 'load' task to initialize the model
+        try {
+            console.log("Loading model...");
+            await PipelineSingleton.getInstance((x) => {
+                self.postMessage({ status: 'loading', progress: x });
+            });
+            self.postMessage({ status: 'loaded', model: PipelineSingleton.model });
+        } catch (error) {
+            console.error("Error loading model:", error);
+            self.postMessage({
+                status: 'error',
+                error: error instanceof Error ? error.message : String(error),
+            });
+        }
+        return;
     }
-};
+
+    if (task === 'process') {
+        // Handle the 'process' task to process input text
+        try {
+            const extractor = await PipelineSingleton.getInstance((x) => {
+                self.postMessage({ status: 'processing', progress: x });
+            });
+
+            const text = input || "";
+            console.log("Processing text length:", text.length, "characters");
+
+            // Get sentence embedding - this handles any length text!
+            const embeddings = await Promise.all(
+                nodes.map(async (node, index) => {
+                    if (node.data && node.data.notes) {
+                        self.postMessage({
+                            status: "processing",
+                            progress: `Processing node ${index + 1} of ${nodes.length}`,
+                        });
+                        const embedding = await extractor(`${node.data.label} ${node.data.notes}`, { pooling: 'mean', normalize: true });
+                        return Array.from(embedding.data); 
+                    } else {
+                        console.warn(`Node ${node.id} has no data.notes property.`);
+                        return null; // Return null for nodes without notes
+                    }
+                })
+            );
+
+            console.log("Embeddings:", embeddings);
+            self.postMessage({
+                status: "result",
+                output: {
+                    embedding: embeddings,
+                }
+            });
+
+        } catch (error) {
+            console.error("Error in processing:", error);
+            self.postMessage({
+                status: "error",
+                error: error instanceof Error ? error.message : String(error),
+            });
+        }
+    }
+};  

@@ -18,6 +18,7 @@ import EditNodeModel from "./EditNodeModel.js";
 import ConfigModel from "./ConfigModel.js";
 import useNodeSearch from "./hooks/useNodeSearch.js";
 import useWorkerManager from "./hooks/useWorkerManager.js";
+import useMLWorkerManager from "./hooks/useMLWorkerManager.js";
 import useNotesData from "./hooks/useNotesData.js";
 const initialNodes = [
 ];
@@ -41,8 +42,11 @@ export default function Notepad() {
     const [config, setConfig] = useState({ k: 2, lambda: 0.05, steps: 10 });
     const [configMenu, setConfigMenu] = useState(false);
 
+    const [embeddings, setEmbeddings] = useState([]);
+
     const { searchValue, searchResults, fuse, handleSearch, resetSearch } = useNodeSearch(nodes);
-    const { workerState, updatePositions } = useWorkerManager(setNodes, config);
+    const { workerState, updatePositions } = useWorkerManager(setNodes, config, embeddings);
+    const { mlWorkerState, mlUpdatePositions, loadWorker } = useMLWorkerManager(setNodes, config, setEmbeddings);
     const { saveNotes, loadNotes } = useNotesData(nodes, edges, getAccessTokenSilently, setMessage);
 
     const handleDelete = (nodeId) => {
@@ -128,6 +132,10 @@ export default function Notepad() {
         updatePositions(nodes);
     }, [updatePositions]);
 
+    const handleMLRun = useCallback(() => {
+        mlUpdatePositions(nodes);
+    }, [mlUpdatePositions]);
+
     const handleSearchClose = useCallback(() => {
         setSearch(false);
         resetSearch();
@@ -155,6 +163,9 @@ export default function Notepad() {
                     onClose={handleConfigClose}
                     onRun={handleConfigRun}
                     workerState={workerState}
+                    mlWorkerState={mlWorkerState}
+                    mlOnRun={handleMLRun}
+                    loadWorker={loadWorker}
                 />
             )}
             {/* search ui */}
