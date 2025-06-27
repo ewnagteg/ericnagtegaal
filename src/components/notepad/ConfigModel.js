@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function ConfigModel({ config, setConfig, onClose, onRun, workerState, mlWorkerState, mlOnRun, loadWorker }) {
+export default function ConfigModel({ config, setConfig, onClose, onRun, workerState, mlWorkerState, mlOnRun, loadWorker, updatedEdges }) {
 
     const handleKChange = (e) => {
         const selectedValue = parseInt(e.target.value, 10);
@@ -23,6 +23,14 @@ export default function ConfigModel({ config, setConfig, onClose, onRun, workerS
         setConfig(prevConfig => ({
             ...prevConfig,
             steps: selectedValue,
+        }));
+    };
+
+    const handleNumEdgesChange = (e) => {
+        const selectedValue = parseInt(e.target.value, 10);
+        setConfig(prevConfig => ({
+            ...prevConfig,
+            numEdges: selectedValue,
         }));
     };
 
@@ -132,6 +140,29 @@ export default function ConfigModel({ config, setConfig, onClose, onRun, workerS
                             Run
                         </button>
                     </div>
+                </>}
+                {(mlWorkerState === "embedded") && <>
+                    
+                    <p className="text-white mb-6">Auto Add Edges</p>
+                    <div className="mt-4 flex justify-end">
+                        <button
+                            className="text-white bg-green-500 px-3 py-1 ml-4 hover:bg-green-600 transition rounded disabled:opacity-50"
+                            onClick={updatedEdges}
+                        >
+                            Update Edges
+                        </button>
+                    </div>
+                    <p>Select number Edges to Add</p>
+                    <input
+                        type="range"
+                        className="w-full bg-gray-800 border p-3 mb-4 text-white rounded"
+                        value={config.numEdges}
+                        min="1"
+                        max="30"
+                        step="1"
+                        onChange={handleNumEdgesChange}
+                    />
+                    <p className="text-white mb-6">Current number of Edges: {config.numEdges}</p>
                 </>}
                 {mlWorkerState === "embedded" && <>
                     <p>Embeddings loaded</p>

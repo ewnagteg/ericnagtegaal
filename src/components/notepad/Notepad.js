@@ -45,7 +45,7 @@ export default function Notepad() {
     const [embeddings, setEmbeddings] = useState([]);
 
     const { searchValue, searchResults, fuse, handleSearch, resetSearch } = useNodeSearch(nodes);
-    const { workerState, updatePositions } = useWorkerManager(setNodes, config, embeddings);
+    const { workerState, updatePositions, updatedEdges } = useWorkerManager(setNodes, setEdges, config, embeddings);
     const { mlWorkerState, mlUpdatePositions, loadWorker } = useMLWorkerManager(setNodes, config, setEmbeddings);
     const { saveNotes, loadNotes } = useNotesData(nodes, edges, getAccessTokenSilently, setMessage);
 
@@ -136,6 +136,11 @@ export default function Notepad() {
         mlUpdatePositions(nodes);
     }, [mlUpdatePositions]);
 
+    const handleEdgeUpdate = useCallback(() => {
+        setConfigMenu(false);
+        updatedEdges(edges, nodes);
+    }, [mlUpdatePositions]);
+
     const handleSearchClose = useCallback(() => {
         setSearch(false);
         resetSearch();
@@ -166,6 +171,7 @@ export default function Notepad() {
                     mlWorkerState={mlWorkerState}
                     mlOnRun={handleMLRun}
                     loadWorker={loadWorker}
+                    updatedEdges={handleEdgeUpdate}
                 />
             )}
             {/* search ui */}
