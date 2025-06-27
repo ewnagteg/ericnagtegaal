@@ -353,7 +353,7 @@ function nudgeNodes(matrix, clusterMap, maxIterations = 10, lambda = 0.1) {
                 let dist = euclideanDistance(nodePositions[j], nodePositions[k]);
                 if (dist === 0) dist = Math.random() + 0.1; // avoid division by zero
 
-                const forceMagnitude = 6 * (1 / dist) * (clusterMap[j] !== clusterMap[k] ? 0.5 : 1);;
+                const forceMagnitude = 2 * (1 / dist) * (clusterMap[j] !== clusterMap[k] ? 0.5 : 1);;
 
                 let directionX = nodePositions[k].x - nodePositions[j].x;
                 let directionY = nodePositions[k].y - nodePositions[j].y;
