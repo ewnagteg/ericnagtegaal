@@ -58,7 +58,7 @@ export default function ConfigModel({ config, setConfig, onClose, onRun, workerS
                     className="w-full bg-gray-800 border p-3 mb-1 text-white rounded"
                     value={config.lambda}
                     min="0.05"
-                    max="5"
+                    max="10"
                     step="0.05"
                     onChange={handleLambdaChange}
                 />
@@ -70,7 +70,7 @@ export default function ConfigModel({ config, setConfig, onClose, onRun, workerS
                     className="w-full bg-gray-800 border p-3 mb-4 text-white rounded"
                     value={config.steps}
                     min="1"
-                    max="100"
+                    max="200"
                     step="1"
                     onChange={handleStepsChange}
                 />

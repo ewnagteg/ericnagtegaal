@@ -348,12 +348,12 @@ function nudgeNodes(matrix, clusterMap, maxIterations = 10, lambda = 0.1) {
             nodeforces[j].x = 0;
             nodeforces[j].y = 0;
             for (let k = 0; k < nodePositions.length; k++) {
-                // if (clusterMap[j] !== clusterMap[k]) continue;
+                if (clusterMap[j] !== clusterMap[k]) continue;
 
                 let dist = euclideanDistance(nodePositions[j], nodePositions[k]);
                 if (dist === 0) dist = Math.random() + 0.1; // avoid division by zero
 
-                const forceMagnitude = 2 * (1 / dist) * (clusterMap[j] !== clusterMap[k] ? 0.5 : 1);;
+                const forceMagnitude = (1 / dist);
 
                 let directionX = nodePositions[k].x - nodePositions[j].x;
                 let directionY = nodePositions[k].y - nodePositions[j].y;
@@ -367,9 +367,10 @@ function nudgeNodes(matrix, clusterMap, maxIterations = 10, lambda = 0.1) {
                 nodeforces[j].y += normalizedDirectionY * forceMagnitude;
             }
         }
+        const scale = 8;
         for (let j = 0; j < nodePositions.length; j++) {
-            nodePositions[j].x += lambda * nodeforces[j].x;
-            nodePositions[j].y += lambda * nodeforces[j].y;
+            nodePositions[j].x += scale * lambda * nodeforces[j].x;
+            nodePositions[j].y += scale * lambda * nodeforces[j].y;
         }
     }
     return nodePositions;
@@ -473,15 +474,24 @@ onmessage = async (e) => {
             }
             const cluster = kmeans(matrix, k);
             let positions = positionNodes(matrix, cluster.centroids, cluster.clusters, steps, lambda);
+
+            
             positions = nudgeNodes(positions, cluster.clusters, steps, lambda);
             postMessage({ type: 'result', data: normalizePositions(positions), clusters: cluster.clusters, centroids: cluster.centroids, nt: nt });
-
+            idf = null;
+            nt = null;
+            matrix = null;
+            positions = null;
         } else {
             const matrix = Object.values(e.data.embeddings);
             const cluster = kmeans(matrix, k);
             let positions = positionNodes(matrix, cluster.centroids, cluster.clusters, steps, lambda);
             positions = nudgeNodes(positions, cluster.clusters, steps, lambda);
             postMessage({ type: 'result', data: normalizePositions(positions), clusters: cluster.clusters, centroids: cluster.centroids });
+            idf = null;
+            nt = null;
+            matrix = null;
+            positions = null;
         }
     }
 }
