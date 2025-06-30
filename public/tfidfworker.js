@@ -419,9 +419,31 @@ onmessage = async (e) => {
             postMessage({ type: 'error', message: 'k must be less than the number of data points' });
             return;
         }
-        if (!config.useEmbeddings || !e.data.embeddings || e.data.embeddings.length === 0) {
-            const nt = {};
-            const idf = {};
+        
+        if (config.useEmbeddings && !!e.data.embeddings && Object.keys(e.data.embeddings).length) {
+            const N = e.data.data.length;
+            let matrix = [];
+            for (let i = 0; i < N; i++) {
+                const node = e.data.data[i];
+                matrix.push(e.data.embeddings[node.id]);
+            }
+            const cluster = kmeans(matrix, k);
+            let positions = positionNodes(matrix, cluster.centroids, cluster.clusters, steps, lambda);
+            positions = nudgeNodes(positions, cluster.clusters, steps, lambda);
+            positions = normalizePositions(positions);
+            let positionMap = {};
+            for (let i = 0; i < N; i++) {
+                const node = e.data.data[i];
+                positionMap[node.id] = positions[i];
+            }
+            postMessage({ type: 'result', data: positionMap, clusters: cluster.clusters, centroids: cluster.centroids });
+            idf = null;
+            nt = null;
+            matrix = null;
+            positions = null;
+        } else {
+            let nt = {};
+            let idf = {};
             for (let i = 0; i < N; i++) {
                 const node = e.data.data[i];
                 const tf = {};
@@ -462,7 +484,7 @@ onmessage = async (e) => {
                     tf[word] *= (Math.log(N / (nt[word] + 1)) + 1); // Calculate IDF
                 }
             }
-            const matrix = [];
+            let matrix = [];
             for (let i = 0; i < N; i++) {
                 const node = e.data.data[i];
                 const tf = idf[node.id];
@@ -477,17 +499,13 @@ onmessage = async (e) => {
 
             
             positions = nudgeNodes(positions, cluster.clusters, steps, lambda);
-            postMessage({ type: 'result', data: normalizePositions(positions), clusters: cluster.clusters, centroids: cluster.centroids, nt: nt });
-            idf = null;
-            nt = null;
-            matrix = null;
-            positions = null;
-        } else {
-            const matrix = Object.values(e.data.embeddings);
-            const cluster = kmeans(matrix, k);
-            let positions = positionNodes(matrix, cluster.centroids, cluster.clusters, steps, lambda);
-            positions = nudgeNodes(positions, cluster.clusters, steps, lambda);
-            postMessage({ type: 'result', data: normalizePositions(positions), clusters: cluster.clusters, centroids: cluster.centroids });
+            positions = normalizePositions(positions);
+            let positionMap = {};
+            for (let i = 0; i < N; i++) {
+                const node = e.data.data[i];
+                positionMap[node.id] = positions[i];
+            }
+            postMessage({ type: 'result', data: positionMap, clusters: cluster.clusters, centroids: cluster.centroids, nt: nt });
             idf = null;
             nt = null;
             matrix = null;

@@ -1,9 +1,10 @@
 import React from 'react';
+import { DEV } from "../../constants.js";
 
 export default function EditNodeModel({selectedNode, setSelectedNode, onDelete, onApply}) {
     return (<div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex justify-center items-center z-50">
         <div className="flex flex-col bg-gray-900 p-4 rounded shadow-lg max-h-xl">
-            <h2 className="text-xl font-bold mb-2">Edit Node:</h2>
+            <h2 className="text-xl font-bold mb-2">Edit Node: {DEV && <>{selectedNode.id}</>}</h2>
             <input
                 type="text"
                 className="w-full bg-gray-800 border p-3 mb-4 text-white rounded"

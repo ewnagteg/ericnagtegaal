@@ -67,7 +67,6 @@ self.onmessage = async function (e) {
             const text = input || "";
             console.log("Processing text length:", text.length, "characters");
 
-            // Get sentence embedding - this handles any length text!
             const embeddings = await Promise.all(
                 nodes.map(async (node, index) => {
                     if (node.data && node.data.notes) {
@@ -76,19 +75,25 @@ self.onmessage = async function (e) {
                             progress: `Processing node ${index + 1} of ${nodes.length}`,
                         });
                         const embedding = await extractor(`${node.data.label} ${node.data.notes}`, { pooling: 'mean', normalize: true });
-                        return Array.from(embedding.data); 
+                        return { id: node.id, embedding: Array.from(embedding.data) };
                     } else {
                         console.warn(`Node ${node.id} has no data.notes property.`);
-                        return null; // Return null for nodes without notes
+                        return null;
                     }
                 })
             );
+            
+            const embeddingDict = embeddings.reduce((acc, item) => {
+                if (item) {
+                    acc[item.id] = item.embedding;
+                }
+                return acc;
+            }, {});
 
-            console.log("Embeddings:", embeddings);
             self.postMessage({
                 status: "result",
                 output: {
-                    embedding: embeddings,
+                    embedding: embeddingDict,
                 }
             });
 

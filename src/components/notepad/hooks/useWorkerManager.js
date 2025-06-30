@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { DEV } from "../../../constants.js";
+
 
 // TODO: move this to utils
 function cosSim(v1, v2) {
@@ -29,12 +31,12 @@ export default function useWorkerManager(setNodes, setEdges, config, embeddings)
 
         worker.onmessage = (e) => {
             if (e.data.type === "result") {
-                const positions = e.data.data;
+                const positionsMap = e.data.data;
                 setWorkerState("ready");
                 setNodes((prevNodes) =>
                     prevNodes.map((node, index) => ({
                         ...node,
-                        position: positions[index],
+                        position: positionsMap[node.id] || node.position,
                     }))
                 );
             } else if (e.data.type === "error") {
@@ -47,7 +49,7 @@ export default function useWorkerManager(setNodes, setEdges, config, embeddings)
 
     const updatePositions = useCallback((nodes) => {
         if (workerRef.current && workerState === "ready") {
-            if (config.useEmbeddings && embeddings[0] && embeddings[0].length > 0) {
+            if (config.useEmbeddings && Object.keys(embeddings).length > 0) {
                 workerRef.current.postMessage({
                     type: "process",
                     data: JSON.stringify(nodes),
@@ -63,7 +65,7 @@ export default function useWorkerManager(setNodes, setEdges, config, embeddings)
             }
             setWorkerState("busy");
         }
-    }, [workerState, config]);
+    }, [workerState, config, embeddings]);
 
     const updatedEdges = useCallback((edges, nodes) => {
 
@@ -75,7 +77,8 @@ export default function useWorkerManager(setNodes, setEdges, config, embeddings)
         let bestScores = new Array(uniqueNodes.length).fill(0);
         for (let j = 0; j < uniqueNodes.length; j++) {
             for (let i = j + 1; i < uniqueNodes.length; i++) {
-                let score = cosSim(embeddings[j], embeddings[i]);
+                let node = uniqueNodes[i];
+                let score = cosSim(embeddings[uniqueNodes[j].id], embeddings[uniqueNodes[i].id]);
                 if (score > bestScores[j]) {
                     bestScores[j] = score;
                     bestEdges[j] = i;
@@ -104,7 +107,14 @@ export default function useWorkerManager(setNodes, setEdges, config, embeddings)
         }
 
         const existingEdgeIds = new Set(edges.map((edge) => edge.id));
-
+        if (DEV) {
+            console.log("\nbreak\n");
+            for (const node of best) {
+                console.log(`Edge from ${uniqueNodes[node.j].id} to ${uniqueNodes[node.i].id} with score ${node.score}`);
+                console.log(`Node ${uniqueNodes[node.j].id}: Notes: ${uniqueNodes[node.j].data.notes}, Embedding: ${embeddings[uniqueNodes[node.j].id][0]}`);
+                console.log(`Node ${uniqueNodes[node.i].id}: Notes: ${uniqueNodes[node.i].data.notes}, Embedding: ${embeddings[uniqueNodes[node.j].id][0]}`);
+            }
+        }
         const newEdges = best
             .map(({ j, i, score }) => ({
                 id: `e${j}-${i}`,
