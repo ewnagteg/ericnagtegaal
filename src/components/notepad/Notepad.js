@@ -6,6 +6,7 @@ import {
     useNodesState,
     useReactFlow,
     useEdgesState,
+    useOnSelectionChange,
     addEdge,
     MarkerType
 } from "@xyflow/react";
@@ -28,13 +29,14 @@ const defaultEdgeOptions = {
         type: MarkerType.ArrowClosed,
         color: '#b1b1b7',
     },
+    selectable: true,
 };
 
 export default function Notepad() {
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
     const { setMessage } = useMessage();
-    const { setViewport } = useReactFlow();    
-
+    const { setViewport } = useReactFlow();
+    const [selectedEdges, setSelectedEdges] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
     const [search, setSearch] = useState(false);
     const [nodes, setNodes, onNodesChanges] = useNodesState(initialNodes);
@@ -61,6 +63,12 @@ export default function Notepad() {
         );
     };
 
+    useOnSelectionChange({
+        onChange: (({ nodes, edges }) => {
+            setSelectedEdges(edges.map((edge) => edge.id));
+        })
+    });
+
     useEffect(() => {
         // Set the message only when the component is first mounted
         setMessage(
@@ -80,6 +88,20 @@ export default function Notepad() {
             loadNotes(setNodes, setEdges);
         }
     }, [isAuthenticated, loadNotes]);
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === "Delete" || event.key === "Backspace") {
+                setEdges((edges) =>
+                    edges.filter((edge) => !selectedEdges.some((selectedEdge) => selectedEdge === edge.id))
+                );
+            }
+        };
+        document.addEventListener("keydown", handleKeyDown);
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [setEdges, setNodes, selectedEdges, edges]);
 
     const onConnect = useCallback((params) => {
         setEdges((eds) => addEdge(params, eds));
@@ -145,6 +167,7 @@ export default function Notepad() {
         setSearch(false);
         resetSearch();
     }, [resetSearch]);
+
 
     return (<main className="text-gray-400 bg-gray-900 body-font">
         <Notepadnav newNote={newNote} saveNotes={saveNotes} searchNotes={searchNotes} updateNodes={updateNodes} />
