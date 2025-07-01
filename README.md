@@ -4,6 +4,8 @@ This is my personal website showcasing my software development projects and tech
 Built to demonstrate full-stack development capabilities across various technologies and domains.
 
 ## Valorant Fantasy League
+![Notepad Demo](public/vldemo.gif)
+
 A full-stack fantasy sports platform for Valorant esports, featuring dynamic player valuations and competitive tournament simulation.
 ### Features
 
@@ -22,6 +24,7 @@ A full-stack fantasy sports platform for Valorant esports, featuring dynamic pla
 
 
 ## Notepad App
+![Notepad Demo](public/notepaddemo.gif)
 
 A spatial note-taking application that allows users to create, organize, and visualize notes in an infinite 2D workspace with intelligent auto-grouping capabilities.
 
