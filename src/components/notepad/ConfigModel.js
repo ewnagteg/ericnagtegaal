@@ -18,6 +18,14 @@ export default function ConfigModel({ config, setConfig, onClose, onRun, workerS
         }));
     };
 
+    const handleAlphaChange = (e) => {
+        const selectedValue = parseFloat(e.target.value);
+        setConfig(prevConfig => ({
+            ...prevConfig,
+            alpha: selectedValue,
+        }));
+    };
+
     const handleStepsChange = (e) => {
         const selectedValue = parseInt(e.target.value, 10);
         setConfig(prevConfig => ({
@@ -45,7 +53,7 @@ export default function ConfigModel({ config, setConfig, onClose, onRun, workerS
     return (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex justify-center items-center z-50">
             <div className="bg-gray-900 p-4 rounded shadow-lg max-w-xl w-full max-h-xl">
-                <h2 className="text-xl font-bold mb-2">Auto Group Nodes Tool</h2>
+                <h2 className="text-white text-xl font-bold mb-2">Auto Group Nodes Tool</h2>
 
                 <p>Select number of clusters notes should be in</p>
                 <select
@@ -60,7 +68,7 @@ export default function ConfigModel({ config, setConfig, onClose, onRun, workerS
                     ))}
                 </select>
 
-                <p>Select how fast nodes should move apart</p>
+                <p className="text-white mb-1">Select how fast nodes should move apart</p>
                 <input
                     type="range"
                     className="w-full bg-gray-800 border p-3 mb-1 text-white rounded"
@@ -71,8 +79,19 @@ export default function ConfigModel({ config, setConfig, onClose, onRun, workerS
                     onChange={handleLambdaChange}
                 />
                 <p className="text-white mb-6">Current Lambda: {config.lambda.toFixed(1)}</p>
+                
+                <p className="text-white mb-1">Select how hard to nudge nodes:</p>
+                <input
+                    type="number"
+                    className="w-full bg-gray-800 border p-3 mb-1 text-white rounded"
+                    value={config.alpha}
+                    min="0.05"
+                    max="10"
+                    step="any"
+                    onChange={handleAlphaChange}
+                />
 
-                <p>Select number of steps to run algorithm</p>
+                <p className="text-white mb-1 mt-6">Select number of steps to run algorithm</p>
                 <input
                     type="range"
                     className="w-full bg-gray-800 border p-3 mb-4 text-white rounded"
@@ -129,7 +148,7 @@ export default function ConfigModel({ config, setConfig, onClose, onRun, workerS
                     <p>load model pls {mlWorkerState}</p>
                 </>}
                 {(mlWorkerState === "ready" || mlWorkerState === "embedded") && <>
-                    
+
                     <p className="text-white mb-6">Run ML Worker</p>
                     <div className="mt-4 flex justify-end">
                         <button
@@ -142,7 +161,7 @@ export default function ConfigModel({ config, setConfig, onClose, onRun, workerS
                     </div>
                 </>}
                 {(mlWorkerState === "embedded") && <>
-                    
+
                     <p className="text-white mb-6">Auto Add Edges</p>
                     <div className="mt-4 flex justify-end">
                         <button

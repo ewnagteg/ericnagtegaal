@@ -340,7 +340,7 @@ function positionNodes(matrix, centroids, clusterMap, maxIterations = 100, lambd
     return nodePositions;
 }
 
-function nudgeNodes(matrix, clusterMap, maxIterations = 10, lambda = 0.1) {
+function nudgeNodes(matrix, clusterMap, maxIterations = 10, lambda = 0.1, alpha=6) {
     const nodePositions = matrix;
     let nodeforces = new Array(matrix.length).fill(null).map(() => ({ x: 0, y: 0 }));
     for (let i = 0; i < maxIterations; i++) {
@@ -367,10 +367,9 @@ function nudgeNodes(matrix, clusterMap, maxIterations = 10, lambda = 0.1) {
                 nodeforces[j].y += normalizedDirectionY * forceMagnitude;
             }
         }
-        const scale = 8;
         for (let j = 0; j < nodePositions.length; j++) {
-            nodePositions[j].x += scale * lambda * nodeforces[j].x;
-            nodePositions[j].y += scale * lambda * nodeforces[j].y;
+            nodePositions[j].x += alpha * lambda * nodeforces[j].x;
+            nodePositions[j].y += alpha * lambda * nodeforces[j].y;
         }
     }
     return nodePositions;
@@ -415,6 +414,8 @@ onmessage = async (e) => {
         const k = e.data.config.k || 2; // default to 2 clusters if not specified
         const steps = e.data.config.steps || 10;
         const lambda = e.data.config.lambda || 0.2;
+        const alpha = e.data.config.aplha || 6;
+
         if (N < k) {
             postMessage({ type: 'error', message: 'k must be less than the number of data points' });
             return;
@@ -429,7 +430,7 @@ onmessage = async (e) => {
             }
             const cluster = kmeans(matrix, k);
             let positions = positionNodes(matrix, cluster.centroids, cluster.clusters, steps, lambda);
-            positions = nudgeNodes(positions, cluster.clusters, steps, lambda);
+            positions = nudgeNodes(positions, cluster.clusters, steps, lambda, alpha);
             positions = normalizePositions(positions);
             let positionMap = {};
             for (let i = 0; i < N; i++) {
@@ -498,7 +499,7 @@ onmessage = async (e) => {
             let positions = positionNodes(matrix, cluster.centroids, cluster.clusters, steps, lambda);
 
             
-            positions = nudgeNodes(positions, cluster.clusters, steps, lambda);
+            positions = nudgeNodes(positions, cluster.clusters, steps, lambda, alpha);
             positions = normalizePositions(positions);
             let positionMap = {};
             for (let i = 0; i < N; i++) {

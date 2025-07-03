@@ -41,7 +41,7 @@ export default function Notepad() {
     const [search, setSearch] = useState(false);
     const [nodes, setNodes, onNodesChanges] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-    const [config, setConfig] = useState({ k: 2, lambda: 0.05, steps: 10 });
+    const [config, setConfig] = useState({ k: 2, lambda: 0.05, steps: 10, alpha: 6 });
     const [configMenu, setConfigMenu] = useState(false);
 
     const [embeddings, setEmbeddings] = useState([]);
