@@ -15,6 +15,7 @@ import VLProfile from "./components/vl/VLProfile.js";
 import VLPlayerStats from "./components/vl/VLPlayerStats.js";
 import VLTeamStats from "./components/vl/VLTeamStats.js";
 import NotepadProvider from "./components/notepad/NotepadProvider.js";
+import VLGroups from "./components/vl/VLGroups.js";
 import { MessageProvider } from "./components/MessageProvider.js";
 
 const TRACKING_ID = "G-0GHRD4B2XS";
@@ -43,6 +44,10 @@ function App() {
                     <Route
                         path="/vl"
                         element={<AuthenticationGuard component={VLApp} />}
+                    />
+                    <Route
+                        path="/vl/group"
+                        element={<AuthenticationGuard component={VLGroups} />}
                     />
                     <Route path="/vl/player-stats/:playerId" element={<AuthenticationGuard component={VLPlayerStats} />} />
                     <Route
