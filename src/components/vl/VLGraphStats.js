@@ -64,40 +64,40 @@ export default function StatsPage() {
         }
     }, [getAccessTokenSilently, isAuthenticated]);
 
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const data = await fetchWithAuth({ getAccessTokenSilently, url: "/preds" });
-                data.sort((a, b) => new Date(b.date) - new Date(a.date));
-                const predsChart = JSON.parse(data[0].chart_data);
-                setPredsData(predsChart);
-            } catch (err) {
-                console.error("Failed to fetch stats:", err);
-            }
-        };
-        if (isAuthenticated) {
-            fetchStats();
-        }
-    }, [getAccessTokenSilently, isAuthenticated]);
+    // useEffect(() => {
+    //     const fetchStats = async () => {
+    //         try {
+    //             const data = await fetchWithAuth({ getAccessTokenSilently, url: "/preds" });
+    //             data.sort((a, b) => new Date(b.date) - new Date(a.date));
+    //             const predsChart = JSON.parse(data[0].chart_data);
+    //             setPredsData(predsChart);
+    //         } catch (err) {
+    //             console.error("Failed to fetch stats:", err);
+    //         }
+    //     };
+    //     if (isAuthenticated) {
+    //         fetchStats();
+    //     }
+    // }, [getAccessTokenSilently, isAuthenticated]);
     
-    // data is sort of hacked in, need to refactor anyway
-    useEffect(() => {
-        const fetchProbs = async () => {
-            try {
-                const data = await fetchWithAuth({ getAccessTokenSilently, url: "/probs" });
-                const formatted = Object.entries(data).map(([user_id, prob]) => ({
-                    user_id,
-                    prob
-                  }));
-                setProbsData(formatted);
-            } catch (err) {
-                console.error("Failed to fetch stats:", err);
-            }
-        };
-        if (isAuthenticated) {
-            fetchProbs();
-        }
-    }, [getAccessTokenSilently, isAuthenticated]);
+    // // data is sort of hacked in, need to refactor anyway
+    // useEffect(() => {
+    //     const fetchProbs = async () => {
+    //         try {
+    //             const data = await fetchWithAuth({ getAccessTokenSilently, url: "/probs" });
+    //             const formatted = Object.entries(data).map(([user_id, prob]) => ({
+    //                 user_id,
+    //                 prob
+    //               }));
+    //             setProbsData(formatted);
+    //         } catch (err) {
+    //             console.error("Failed to fetch stats:", err);
+    //         }
+    //     };
+    //     if (isAuthenticated) {
+    //         fetchProbs();
+    //     }
+    // }, [getAccessTokenSilently, isAuthenticated]);
 
     return (
         <main id="top" className="text-gray-400 bg-gray-900 body-font">
@@ -113,7 +113,7 @@ export default function StatsPage() {
                             <br />
                         </div>
                     </div>
-                    {probsData && <table className="table-auto mb-8 border border-gray-300">
+                    {/* {probsData && <table className="table-auto mb-8 border border-gray-300">
                         <thead>
                             <tr className="bg-gray-600">
                                 <th className="border border-gray-300 px-4 py-2 text-white font-bold">User ID</th>
@@ -129,7 +129,7 @@ export default function StatsPage() {
                             ))}
                         </tbody>
                     </table>
-                    }
+                    } */}
                     <table className="table-auto border border-gray-300">
                         <thead>
                             <tr className="bg-gray-600">
