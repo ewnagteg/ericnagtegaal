@@ -137,7 +137,7 @@ export default function VLGroups() {
             {loading && <div className="loader">Loading...</div>}
             <section className="relative py-10">
                 <div className="container mx-auto px-5">
-                    <h2 className="text-white sm:text-4xl text-3xl mb-4 font-medium title-font">Group</h2>
+                    <h2 className="text-white sm:text-4xl text-3xl mb-4 font-medium title-font">Your Groups</h2>
                     <div>
                         {loading == false && group.length > 0 &&
                             <table className="table-auto border border-gray-300 w-full">
@@ -177,9 +177,21 @@ export default function VLGroups() {
                         }
 
                     </div>
+                    <div className="container mx-auto px-5 m-4">
+                        {
+                            loading == false &&
+                            <button
+                                onClick={(e) => createGroup(e)}
+                                type="submit"
+                                className="w-full text-white bg-green-500 px-3 py-3 ml-4 hover:bg-green-600 transition rounded"
+                            >
+                                Create Group
+                            </button>
+                        }
+                    </div>
                     {
                         loading == false &&
-                        <form onSubmit={handleSubmit} className="max-w-sm mx-auto p-4 rounded shadow">
+                        <form onSubmit={handleSubmit} className="max-w-sm mx-auto p-4 rounded">
                             <h2 className="text-xl font-bold mb-4">Join Group</h2>
                             <div className="mb-2">
                                 <label className="block text-sm font-medium">
@@ -215,7 +227,7 @@ export default function VLGroups() {
                     }
                     {
                         loading == false &&
-                        <form onSubmit={setGroupName} className="max-w-sm mx-auto p-4 rounded shadow">
+                        <form onSubmit={setGroupName} className="max-w-sm mx-auto p-4 rounded">
                             <h2 className="text-xl font-bold mb-4">Set Group Name</h2>
                             <div className="mb-2">
                                 <label className="block text-sm font-medium">
@@ -248,18 +260,6 @@ export default function VLGroups() {
                                 Submit
                             </button>
                         </form>
-                    }
-                </div>
-                <div className="container mx-auto px-5">
-                    {
-                        loading == false &&
-                        <button
-                            onClick={(e) => createGroup(e)}
-                            type="submit"
-                            className="w-full text-gray-300 bg-gray-700 py-2 px-4 rounded hover:bg-gray-800 transition"
-                        >
-                            Create Group
-                        </button>
                     }
                 </div>
             </section>
