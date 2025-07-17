@@ -110,7 +110,7 @@ export default function VLNavBar() {
                                 </li>
                                 <li>
                                     <HashLink to="/team-stats#top" className="hover:text-blue-600">
-                                        Teams
+                                        Group Teams
                                     </HashLink>
                                 </li>
                                 <li>
@@ -159,7 +159,7 @@ export default function VLNavBar() {
                             Edit Team
                         </HashLink>
                         <HashLink to="/team-stats#top" className="mr-5 hover:text-white">
-                            Teams
+                            Group Teams
                         </HashLink>
                         <HashLink to="/stats#top" className="mr-5 hover:text-white">
                             Group Leaderboard
