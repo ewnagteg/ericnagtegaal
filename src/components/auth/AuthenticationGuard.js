@@ -6,7 +6,7 @@ export const AuthenticationGuard = ({ component }) => {
   console.log("gaurd isAuthenticated:", isAuthenticated, "user:", user);
   const Component = withAuthenticationRequired(component, {
     onRedirecting: () => (
-      <div className="bg-gray-900 page-layout">
+      <div className="fixed inset-0 bg-gray-900 page-layout flex items-center justify-center">
         <p>Redirect...</p>
       </div>
     ),
