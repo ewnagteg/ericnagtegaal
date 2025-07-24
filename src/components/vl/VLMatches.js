@@ -46,7 +46,7 @@ export default function VLMatches() {
             <section>
                 <div className="w-full overflow-x-auto">
 
-                    <table className="table-auto border border-gray-300 w-full hidden sm:table">
+                    <table className="table-auto border border-gray-300 w-full sm:table">
                         <thead>
                             <tr className="bg-gray-600">
                                 <th className="border border-gray-300 px-4 py-2 text-white font-bold">player_id</th>
