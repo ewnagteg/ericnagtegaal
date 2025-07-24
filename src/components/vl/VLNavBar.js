@@ -127,6 +127,8 @@ export default function VLNavBar() {
                                     <HashLink to="/vl/group" className="mr-5 hover:text-white">
                                         Groups
                                     </HashLink>
+                                </li>
+                                <li>
                                     <HashLink to="/vl/matches" className="mr-5 hover:text-white">
                                         Matches
                                     </HashLink>
