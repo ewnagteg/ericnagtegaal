@@ -52,6 +52,9 @@ export default function VLMatches() {
                                 <th className="border border-gray-300 px-4 py-2 text-white font-bold">player_id</th>
                                 <th className="border border-gray-300 px-4 py-2 text-white font-bold">match_id</th>
                                 <th className="border border-gray-300 px-4 py-2 text-white font-bold">kills</th>
+                                <th className="border border-gray-300 px-4 py-2 text-white font-bold">team1</th>
+                                <th className="border border-gray-300 px-4 py-2 text-white font-bold">team2</th>
+                                <th className="border border-gray-300 px-4 py-2 text-white font-bold">date</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -74,6 +77,9 @@ export default function VLMatches() {
                                         </Link>
                                     </td>
                                     <td className="border border-gray-300 px-4 py-2">{row.kills}</td>
+                                    <td className="border border-gray-300 px-4 py-2">{row.MatchInfo.team1}</td>
+                                    <td className="border border-gray-300 px-4 py-2">{row.MatchInfo.team2}</td>
+                                    <td className="border border-gray-300 px-4 py-2">{row.MatchInfo.match_date}</td>
                                 </tr>
                             ))}
                         </tbody>
