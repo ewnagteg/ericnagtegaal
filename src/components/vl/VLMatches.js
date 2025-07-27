@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import VLNavBar from "./VLNavBar.js";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMessage } from "../MessageProvider.js";
-import { fetchWithAuth, fetchWithAuthPost } from "../../api/fetchWithAuth.js";
+import { fetchWithAuth } from "../../api/fetchWithAuth.js";
 import { Link } from "react-router-dom";
 
 
@@ -26,7 +26,7 @@ export default function VLMatches() {
                     }
                     match.colour = colours[colour];
                 }
-                data['matches'].sort((a, b) => b.match_id - a.match_id);
+                data['matches'].sort((a, b) => new Date(b.MatchInfo.match_date) - new Date(a.MatchInfo.match_date));
                 setMatches(data['matches' || []]);
             } catch (err) {
                 console.error("Failed to load matches:", err);
@@ -46,7 +46,7 @@ export default function VLMatches() {
             <section>
                 <div className="w-full overflow-x-auto">
 
-                    <table className="table-auto border border-gray-300 w-full sm:table">
+                    <table className="table-auto border border-gray-300 w-full hidden sm:table">
                         <thead>
                             <tr className="bg-gray-600">
                                 <th className="border border-gray-300 px-4 py-2 text-white font-bold">player_id</th>
@@ -84,6 +84,41 @@ export default function VLMatches() {
                             ))}
                         </tbody>
                     </table>
+
+                    <div className="sm:hidden space-y-4">
+                        {Object.entries(matches).map(([id, row]) => (
+                            <div className="bg-gray-800 p-4 rounded shadow">
+                                <div className="text-gray-300 text-sm">Player ID:
+                                    <Link
+                                        to={`https://vlr.gg/player/${row.player_id}`}
+                                        className="text-indigo-400 hover:underline"
+                                    >
+                                        {row.player_id}
+                                    </Link>
+                                </div>
+                                <div className="text-gray-300 text-sm">Match ID:
+                                    <Link
+                                        to={`https://vlr.gg/${row.match_id}`}
+                                        className="text-indigo-400 hover:underline"
+                                    >
+                                        {row.match_id}
+                                    </Link>
+                                </div>
+                                <div className="text-gray-300 text-sm">Kills: {row.kills}</div>
+                                <div className="text-gray-300 text-sm">Team1: {row.MatchInfo.team1}</div>
+                                <div className="text-gray-300 text-sm">Team2: {row.MatchInfo.team2}</div>
+                                <div className="text-gray-300 text-sm">Date: {row.MatchInfo.match_date}</div>
+                                <div className="text-gray-300 text-sm">Match ID:
+                                    <Link
+                                        to={`https://vlr.gg/${row.match_id}`}
+                                        className="text-indigo-400 hover:underline"
+                                    >
+                                        {row.match_id}
+                                    </Link>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
         </div>
