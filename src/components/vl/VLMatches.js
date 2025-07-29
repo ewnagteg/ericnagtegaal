@@ -50,6 +50,7 @@ export default function VLMatches() {
                         <thead>
                             <tr className="bg-gray-600">
                                 <th className="border border-gray-300 px-4 py-2 text-white font-bold">player_id</th>
+                                <th className="border border-gray-300 px-4 py-2 text-white font-bold">name</th>
                                 <th className="border border-gray-300 px-4 py-2 text-white font-bold">match_id</th>
                                 <th className="border border-gray-300 px-4 py-2 text-white font-bold">kills</th>
                                 <th className="border border-gray-300 px-4 py-2 text-white font-bold">team1</th>
@@ -68,6 +69,7 @@ export default function VLMatches() {
                                             {row.player_id}
                                         </Link>
                                     </td>
+                                    <td className="border border-gray-300 px-4 py-2">{row.Player ? row.Player.name : ""}</td>
                                     <td className="border border-gray-300 px-4 py-2">
                                         <Link
                                             to={`https://vlr.gg/${row.match_id}`}
@@ -88,6 +90,7 @@ export default function VLMatches() {
                     <div className="sm:hidden space-y-4">
                         {Object.entries(matches).map(([id, row]) => (
                             <div className="bg-gray-800 p-4 rounded shadow">
+                                <div className="text-gray-300 text-sm">Player Name: {row.Player ? row.Player.name : ""}</div>
                                 <div className="text-gray-300 text-sm">Player ID:
                                     <Link
                                         to={`https://vlr.gg/player/${row.player_id}`}
