@@ -42,6 +42,7 @@ export default function VLPlayerStats() {
                                             <th className="border border-gray-300 px-4 py-2 text-white font-bold">Player Name</th>
                                             <th className="border border-gray-300 px-4 py-2 text-white font-bold">Player id</th>
                                             <th className="border border-gray-300 px-4 py-2 text-white font-bold">Points</th>
+                                            <th className="border border-gray-300 px-4 py-2 text-white font-bold">Group Ids</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -50,6 +51,7 @@ export default function VLPlayerStats() {
                                                 <td className="border border-gray-300 px-4 py-2">{player.name}</td>
                                                 <td className="border border-gray-300 px-4 py-2">{player.player_id}</td>
                                                 <td className="border border-gray-300 px-4 py-2">{player.total_kills}</td>
+                                                <td className="border border-gray-300 px-4 py-2">{player.groupids}</td>
                                             </tr>
                                         ))}
                                     </tbody>

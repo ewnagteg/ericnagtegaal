@@ -110,17 +110,27 @@ export default function VLNavBar() {
                                 </li>
                                 <li>
                                     <HashLink to="/team-stats#top" className="hover:text-blue-600">
-                                        Teams
+                                        Group Teams
                                     </HashLink>
                                 </li>
                                 <li>
                                     <HashLink to="/stats#top" className="hover:text-blue-600">
-                                        Leaderboard
+                                        Group Leaderboard
                                     </HashLink>
                                 </li>
                                 <li>
                                     <HashLink to="/profile#top" className="hover:text-blue-600">
                                         Profile
+                                    </HashLink>
+                                </li>
+                                <li>
+                                    <HashLink to="/vl/group" className="mr-5 hover:text-white">
+                                        Groups
+                                    </HashLink>
+                                </li>
+                                <li>
+                                    <HashLink to="/vl/matches" className="mr-5 hover:text-white">
+                                        Matches
                                     </HashLink>
                                 </li>
                                 {location.pathname in helpContent &&
@@ -154,13 +164,19 @@ export default function VLNavBar() {
                             Edit Team
                         </HashLink>
                         <HashLink to="/team-stats#top" className="mr-5 hover:text-white">
-                            Teams
+                            Group Teams
                         </HashLink>
                         <HashLink to="/stats#top" className="mr-5 hover:text-white">
-                            Leaderboard
+                            Group Leaderboard
                         </HashLink>
                         <HashLink to="/profile#top" className="mr-5 hover:text-white">
                             Profile
+                        </HashLink>
+                        <HashLink to="/vl/group" className="mr-5 hover:text-white">
+                            Groups
+                        </HashLink>
+                        <HashLink to="/vl/matches" className="mr-5 hover:text-white">
+                            Matches
                         </HashLink>
                         {location.pathname in helpContent &&
                             <button
