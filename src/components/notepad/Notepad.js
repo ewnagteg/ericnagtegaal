@@ -50,7 +50,7 @@ export default function Notepad() {
     const { workerState, updatePositions, updatedEdges } = useWorkerManager(setNodes, setEdges, config, embeddings);
     const { mlWorkerState, mlUpdatePositions, loadWorker } = useMLWorkerManager(setNodes, config, setEmbeddings);
     const { saveNotes, loadNotes } = useNotesData(nodes, edges, getAccessTokenSilently, setMessage);
-
+    
     const handleDelete = (nodeId) => {
         setNodes((prevNodes) => prevNodes.filter((node) => node.id !== nodeId));
     };
@@ -95,13 +95,20 @@ export default function Notepad() {
                 setEdges((edges) =>
                     edges.filter((edge) => !selectedEdges.some((selectedEdge) => selectedEdge === edge.id))
                 );
+            } else if (event.key === 'Escape') {
+                if (configMenu)
+                    setConfigMenu(false);
+                if (search)
+                    setSearch(false);
+            } else {
+                console.log(event.key)
             }
         };
         document.addEventListener("keydown", handleKeyDown);
         return () => {
             document.removeEventListener("keydown", handleKeyDown);
         };
-    }, [setEdges, setNodes, selectedEdges, edges]);
+    }, [setEdges, setNodes, selectedEdges, edges, search, configMenu]);
 
     const onConnect = useCallback((params) => {
         setEdges((eds) => addEdge(params, eds));
@@ -167,7 +174,6 @@ export default function Notepad() {
         setSearch(false);
         resetSearch();
     }, [resetSearch]);
-
 
     return (<main className="text-gray-400 bg-gray-900 body-font">
         <Notepadnav newNote={newNote} saveNotes={saveNotes} searchNotes={searchNotes} updateNodes={updateNodes} />
