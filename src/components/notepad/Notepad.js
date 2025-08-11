@@ -95,11 +95,13 @@ export default function Notepad() {
                 setEdges((edges) =>
                     edges.filter((edge) => !selectedEdges.some((selectedEdge) => selectedEdge === edge.id))
                 );
-            } else if (event.key === 'Escape') {
+            } else if (event.key === "Escape") {
                 if (configMenu)
                     setConfigMenu(false);
                 if (search)
                     setSearch(false);
+            } else if (event.key === "f" && !search && !configMenu && !selectedNode) {
+                setSearch(true);
             } else {
                 console.log(event.key)
             }
