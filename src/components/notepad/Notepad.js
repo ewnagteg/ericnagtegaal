@@ -50,7 +50,10 @@ export default function Notepad() {
     const { workerState, updatePositions, updatedEdges } = useWorkerManager(setNodes, setEdges, config, embeddings);
     const { mlWorkerState, mlUpdatePositions, loadWorker } = useMLWorkerManager(setNodes, config, setEmbeddings);
     const { saveNotes, loadNotes } = useNotesData(nodes, edges, getAccessTokenSilently, setMessage);
-    
+    const stateRef = useRef({}); // needed for capturing keys
+
+
+
     const handleDelete = (nodeId) => {
         setNodes((prevNodes) => prevNodes.filter((node) => node.id !== nodeId));
     };
@@ -68,6 +71,15 @@ export default function Notepad() {
             setSelectedEdges(edges.map((edge) => edge.id));
         })
     });
+
+    useEffect(() => {
+        stateRef.current = {
+            search,
+            configMenu,
+            selectedNode,
+            selectedEdges
+        };
+    }, [search, configMenu, selectedNode, selectedEdges]);
 
     useEffect(() => {
         // Set the message only when the component is first mounted
@@ -91,26 +103,35 @@ export default function Notepad() {
 
     useEffect(() => {
         const handleKeyDown = (event) => {
+            const { search, configMenu, selectedNode, selectedEdges } = stateRef.current;
+
             if (event.key === "Delete" || event.key === "Backspace") {
                 setEdges((edges) =>
-                    edges.filter((edge) => !selectedEdges.some((selectedEdge) => selectedEdge === edge.id))
+                    edges.filter(
+                        (edge) => !selectedEdges.some((id) => id === edge.id)
+                    )
                 );
-            } else if (event.key === "Escape") {
-                if (configMenu)
-                    setConfigMenu(false);
-                if (search)
-                    setSearch(false);
-            } else if (event.key === "f" && !search && !configMenu && !selectedNode) {
+            }
+            else if (event.key === "Escape") {
+                if (configMenu) setConfigMenu(false);
+                if (search) setSearch(false);
+                if (selectedNode) setSelectedNode(null);
+            }
+            else if (
+                (event.ctrlKey || event.metaKey) &&
+                event.key.toLowerCase() === "f" &&
+                !search &&
+                !configMenu &&
+                !selectedNode
+            ) {
+                event.preventDefault();
                 setSearch(true);
-            } else {
-                console.log(event.key)
             }
         };
         document.addEventListener("keydown", handleKeyDown);
-        return () => {
-            document.removeEventListener("keydown", handleKeyDown);
-        };
-    }, [setEdges, setNodes, selectedEdges, edges, search, configMenu]);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    }, []);
+
 
     const onConnect = useCallback((params) => {
         setEdges((eds) => addEdge(params, eds));
