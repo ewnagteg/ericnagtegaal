@@ -35,7 +35,8 @@ A spatial note-taking application that allows users to create, organize, and vis
 - **Advanced Search**: Quickly find notes across your entire workspace
 - **Intelligent Auto-Grouping**: Automatically cluster related notes using:
   - TF-IDF (Term Frequency-Inverse Document Frequency) for content analysis
-  - K-means clustering for semantic grouping
+  - MiniLM run in browser with WASM for better context sensitive embeddings 
+  - K-means clustering for enhanced semantic note grouping
   - Particle simulation for natural spatial arrangement
 - **Secure Authentication**: Auth0 integration for user management and data privacy
 
@@ -47,10 +48,8 @@ A spatial note-taking application that allows users to create, organize, and vis
 
 ### TODO
 
-- [ ] Implement LLM embeddings for enhanced semantic note grouping
-
-Transform your note-taking with spatial organization and AI-powered clustering that understands the relationships between your ideas.
-
+- [x] Implement LLM embeddings for enhanced semantic note grouping
+- [ ] Implement table of contents showing headers in notepad
 
 
 ## Available Scripts
