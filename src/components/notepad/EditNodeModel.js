@@ -80,8 +80,13 @@ export default function EditNodeModel({ selectedNode, setSelectedNode, onDelete,
                     <button
                         className="text-white bg-green-500 px-3 py-1 ml-4 hover:bg-green-600 transition rounded"
                         onClick={() => {
-                            // Save logic here, eg, update nodes
-                            onApply(selectedNode);
+                            onApply({
+                                ...selectedNode,
+                                data: {
+                                    ...selectedNode.data,
+                                    notes: notes,
+                                },
+                            });
                             setSelectedNode(null);
                         }}
                     >
