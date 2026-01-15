@@ -120,12 +120,7 @@ export default function VLEditTeam() {
                             {filteredAndSorted.map((player, index) => (
                                 <tr className={`hover:bg-gray-700  ${index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800'} `} key={player.player_id}>
                                     <td className="border border-gray-300 px-4 py-2">
-                                        <Link
-                                            to={`/vl/player-stats/${player.name}`}
-                                            className="text-indigo-400 hover:underline"
-                                        >
                                             {player.name}
-                                        </Link>
                                     </td>
                                     <td className="border border-gray-300 px-4 py-2"><a href={`https://vlr.gg/player/${player.player_id}`} className="text-indigo-400 hover:underline">VLR</a></td>
                                     <td className="border border-gray-300 px-4 py-2">{player.player_id}</td>
