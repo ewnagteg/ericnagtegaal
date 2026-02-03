@@ -32,7 +32,7 @@ export default function VLProfile() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            fetchWithAuthPost({ getAccessTokenSilently, url: "/profile", body: username });
+            fetchWithAuthPost({ getAccessTokenSilently, url: "/profile", body: {username: username} });
 
             setProfile((prev) =>
                 prev.length === 0
