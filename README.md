@@ -54,10 +54,8 @@ A spatial note-taking application that allows users to create, organize, and vis
 
 ## Available Scripts
 
-### `npm start`
+### `npm run dev`
 Starts app on localhost
 
 ### `npm run build`
 Builds to dist
-
-### `npm run eject`
